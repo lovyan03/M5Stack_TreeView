@@ -122,18 +122,20 @@ void setup() {
 uint32_t loopcounter = 0;
 bool redraw = true;
 void loop() {
-  if (!(loopcounter % 10))  header.draw();
-
+  bool fld_redraw = redraw;
   if (redraw) {
     Rect16 r = treeView.clientRect;
     r.inflate(1);
-    M5.Lcd.fillRect(0, r.bottom() + 2, M5.Lcd.width(), M5.Lcd.height() - r.bottom() - 2, treeView.backgroundColor);
+    M5.Lcd.fillScreen(treeView.backgroundColor);
     M5.Lcd.drawRect(r.x -1, r.y, r.w +2, r.h, MenuItem::frameColor[1]);
     M5.Lcd.drawRect(r.x, r.y -1, r.w, r.h +2, MenuItem::frameColor[1]);
+    redraw = false;
   }
+  
+  if (!(loopcounter % 10))  header.draw();
 
-  MenuItem* mi = treeView.update(redraw);
-  redraw = false;
+  MenuItem* mi = treeView.update(fld_redraw);
+
   if (mi != NULL) {
     switch (mi->tag) {
     default: return;
@@ -292,24 +294,26 @@ void CallBackFS(MenuItem* sender)
 
   if (mi->isDir) return;
 
+  M5.Lcd.clear(0);
   int idx = mi->path.lastIndexOf('.') + 1;
   String ext = mi->path.substring(idx);
   if (ext == "jpg") {
-    M5.Lcd.drawJpgFile(mi->getFS(), mi->path.c_str(), 204, 40);
-  }
-  else
-  {
+    M5.Lcd.drawJpgFile(mi->getFS(), mi->path.c_str());
+  } else {
     File file = mi->getFS().open(mi->path, FILE_READ);
     if (!file.isDirectory()) {
       FileView(file);
     }
     file.close();
-    M5.Lcd.fillScreen(0);
   }
+  M5ButtonDrawer btnDrawer;
+  btnDrawer.setText("Back","","");
+  btnDrawer.draw(true);
+  while (!M5.BtnA.wasReleased()) M5.update();
+  redraw = true;
 }
 
 void FileView(File ff){
-  M5.Lcd.clear(0);
   M5.Lcd.setTextColor(0xffff,0);
   M5.Lcd.setCursor(0,0);
   size_t len = ff.size();
@@ -318,9 +322,6 @@ void FileView(File ff){
   if (ff.read(buf, len)) {
     for(int i=0; i<len; ++i){
       M5.Lcd.write(buf[i]);
-    }
-    while (!M5.BtnA.wasReleased()) {
-      M5.update();
     }
   }
 }

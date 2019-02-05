@@ -14,9 +14,9 @@ struct MenuCallBack {
     M5.Lcd.fillScreen(MenuItem::backgroundColor);
     btnDrawer.setText("Back","","");
     if (setup()) {
-      btnDrawer.draw(true);
+      byte i = -1;
       do {
-        btnDrawer.draw();
+        btnDrawer.draw(0 == (++i & 0x0F));
       } while (loop());
       close();
       M5.Lcd.fillScreen(MenuItem::backgroundColor);
