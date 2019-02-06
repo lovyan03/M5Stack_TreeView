@@ -1,10 +1,18 @@
 #include <vector>
 #include <M5Stack.h>
 #include <M5TreeView.h>
+#include <M5OnScreenKeyboard.h>
+#include <MenuItemSD.h>
+#include <MenuItemSPIFFS.h>
+#include <MenuItemWiFiClient.h>
+#include <Preferences.h>
 
 #include "MenuItemSDUpdater.h"
+#include "HeaderSample.h"
 
 M5TreeView treeView;
+M5OnScreenKeyboard osk;
+HeaderSample header;
 
 typedef std::vector<MenuItem*> vmi;
 
@@ -13,9 +21,9 @@ void setup() {
   Wire.begin();
 
   treeView.clientRect.x = 2;
-  treeView.clientRect.y = 12;
+  treeView.clientRect.y = 16;
   treeView.clientRect.w = 196;
-  treeView.clientRect.h = 210;
+  treeView.clientRect.h = 200;
   treeView.itemWidth = 186;
   treeView.itemHeight = 18;
   treeView.font = 1;
@@ -25,15 +33,57 @@ void setup() {
   treeView.usePLUSEncoder = true;
 
   treeView.setItems(vmi
-               { new MenuItemSDUpdater("SD Updater") }
-               );
+               { new MenuItemWiFiClient("WiFi Client", CallBackWiFiClient)
+               , new MenuItemSDUpdater("SD Updater")
+               , new MenuItemSD("SD card")
+               , new MenuItemSPIFFS("SPIFFS")
+               });
   treeView.begin();
-
-  M5.Lcd.drawRect(0,11,200,212,MenuItem::frameColor[1]);
-  M5.Lcd.drawRect(1,10,198,214,MenuItem::frameColor[1]);
 }
 
-bool force = false;
+
+
+bool redraw = true;
 void loop() {
-  treeView.update();
+
+  if (redraw) {
+    Rect16 r = treeView.clientRect;
+    r.inflate(1);
+    M5.Lcd.drawRect(r.x -1, r.y, r.w +2, r.h, MenuItem::frameColor[1]);
+    M5.Lcd.drawRect(r.x, r.y -1, r.w, r.h +2, MenuItem::frameColor[1]);
+  }
+  treeView.update(redraw);
+  redraw = false;
+  header.draw();
+}
+
+
+void CallBackWiFiClient(MenuItem* sender)
+{
+  MenuItemWiFiClient* mi = static_cast<MenuItemWiFiClient*>(sender);
+  if (!mi) return;
+
+  if (mi->ssid == "") return;
+
+  Preferences preferences;
+  preferences.begin("wifi-config");
+  preferences.putString("WIFI_SSID", mi->ssid);
+  String wifi_passwd = preferences.getString("WIFI_PASSWD");
+
+  if (mi->auth != WIFI_AUTH_OPEN) {
+    osk.setup(wifi_passwd);
+    while (osk.loop()) { delay(1); }
+    wifi_passwd = osk.getString();
+    osk.close();
+    redraw = true;
+    WiFi.disconnect();
+    WiFi.begin(mi->ssid.c_str(), wifi_passwd.c_str());
+    preferences.putString("WIFI_PASSWD", wifi_passwd);
+  } else {
+    WiFi.disconnect();
+    WiFi.begin(mi->ssid.c_str(), "");
+    preferences.putString("WIFI_PASSWD", "");
+  }
+  preferences.end();
+  while (M5.BtnA.isPressed()) M5.update();
 }

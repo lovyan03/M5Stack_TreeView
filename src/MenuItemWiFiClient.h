@@ -4,7 +4,6 @@
 #include <WiFi.h>
 #include <MenuItem.h>
 #include <Rect16.h>
-#include <M5OnScreenKeyboard.h>
 
 class MenuItemWiFiClient : public MenuItem {
 public:

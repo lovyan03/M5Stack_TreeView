@@ -106,7 +106,7 @@ M5TreeView::eCmd M5TreeView::checkInput() {
 }
 
 MenuItem* M5TreeView::update(bool force) {
-  if (millis() - _msec < 16) return NULL;
+  while (millis() - _msec < 16) delay(1);
   _msec = millis();
 
   eCmd cmd = checkInput();

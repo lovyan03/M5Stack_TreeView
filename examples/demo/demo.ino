@@ -3,10 +3,12 @@
 #include <SPIFFS.h>
 #include <M5Stack.h>
 #include <M5TreeView.h>
+#include <M5OnScreenKeyboard.h>
 #include <MenuItemWiFiClient.h>
 #include <MenuItemSD.h>
 #include <MenuItemSPIFFS.h>
 #include <M5ButtonDrawer.h>
+#include <Preferences.h>
 
 #include "HeaderSample.h"
 
@@ -27,8 +29,6 @@ void CallBackExec(MenuItem* sender)
   T menucallback;
   menucallback(sender);
 }
-
-
 
 void setup() {
   M5.begin();
@@ -245,8 +245,6 @@ void loop() {
 }
 
 
-String wifiClientPass;
-
 void CallBackWiFiClient(MenuItem* sender)
 {
   MenuItemWiFiClient* mi = static_cast<MenuItemWiFiClient*>(sender);
@@ -254,19 +252,26 @@ void CallBackWiFiClient(MenuItem* sender)
 
   if (mi->ssid == "") return;
 
-  if (mi->auth != WIFI_AUTH_OPEN) {
-    osk.setup(wifiClientPass);
-    while (osk.loop()) { delay(1); }
-    wifiClientPass = osk.getString();
-    osk.close();
+  Preferences preferences;
+  preferences.begin("wifi-config");
+  preferences.putString("WIFI_SSID", mi->ssid);
+  String wifi_passwd = preferences.getString("WIFI_PASSWD");
 
+  if (mi->auth != WIFI_AUTH_OPEN) {
+    osk.setup(wifi_passwd);
+    while (osk.loop()) { delay(1); }
+    wifi_passwd = osk.getString();
+    osk.close();
     redraw = true;
     WiFi.disconnect();
-    WiFi.begin(mi->ssid.c_str(), wifiClientPass.c_str());
+    WiFi.begin(mi->ssid.c_str(), wifi_passwd.c_str());
+    preferences.putString("WIFI_PASSWD", wifi_passwd);
   } else {
     WiFi.disconnect();
     WiFi.begin(mi->ssid.c_str(), "");
+    preferences.putString("WIFI_PASSWD", "");
   }
+  preferences.end();
   while (M5.BtnA.isPressed()) M5.update();
 }
 

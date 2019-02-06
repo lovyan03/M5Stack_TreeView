@@ -1,7 +1,7 @@
 M5Stack TreeView menu UI library.
 ===
 
-TreeView menu user interface library.  
+TreeView menu user interface library for M5Stack.  
 
 M5Stack用 ツリービュー形式のメニューUIライブラリ  
 
