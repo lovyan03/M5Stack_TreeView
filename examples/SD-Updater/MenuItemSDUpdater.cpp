@@ -1,12 +1,12 @@
 #include "MenuItemSDUpdater.h"
 
-#include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater
+#include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater/
 #include <SD.h>
 
 static SDUpdater sdUpdater;
 
 void MenuItemSDUpdater::onEnter() {
-  if (!filename.length()) {
+  if (!name.length()) {
 
     // SDのルートフォルダから *.bin ファイルを探す。
     deleteItems();
@@ -30,18 +30,18 @@ void MenuItemSDUpdater::onEnter() {
     root.close();
   } else {
     // 選択されたbinファイルでupdateを実行する。
-    String bin = "/" + filename + ".bin";
+    String bin = "/" + name + ".bin";
     sdUpdater.updateFromFS(SD, bin);
     ESP.restart();
   }
-
   MenuItem::onEnter();
 }
 
 void MenuItemSDUpdater::onFocus() {
-  String jpg = "/jpg/" + filename + ".jpg";
-  M5.Lcd.setTextColor(0xFFFF,0);
-  M5.Lcd.drawJpgFile(SD, jpg.c_str(), 200, 40);
+  String filename = "/jpg/" + name + ".jpg";
+  if (SD.exists(filename.c_str())) {
+    M5.Lcd.drawJpgFile(SD, filename.c_str(), 200, 40);
+  }
 }
 
 void MenuItemSDUpdater::onDefocus() {

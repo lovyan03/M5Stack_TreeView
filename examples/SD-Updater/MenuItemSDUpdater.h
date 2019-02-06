@@ -6,13 +6,13 @@
 class MenuItemSDUpdater : public MenuItem {
   static uint16_t maxFileCount;
 public:
-  String filename;
+  String name;
 
   MenuItemSDUpdater(const String& titleStr, std::function<void(MenuItem*)>cb = NULL)
-  : MenuItem(titleStr, cb), filename() {};
+  : MenuItem(titleStr, cb), name() {};
 
   MenuItemSDUpdater(const String& t, const String& p)
-  : MenuItem(t), filename(p) {};
+  : MenuItem(t), name(p) {};
 
   virtual void onFocus();
   virtual void onDefocus();

@@ -31,6 +31,11 @@ void setup() {
   treeView.useFACES = true;
   treeView.useJoyStick = true;
   treeView.usePLUSEncoder = true;
+  osk.useTextbox     = true;
+  osk.useFACES       = true;
+  osk.useCardKB      = true;
+  osk.useJoyStick    = true;
+  osk.usePLUSEncoder = true;
 
   treeView.setItems(vmi
                { new MenuItemWiFiClient("WiFi Client", CallBackWiFiClient)
@@ -51,9 +56,11 @@ void loop() {
     r.inflate(1);
     M5.Lcd.drawRect(r.x -1, r.y, r.w +2, r.h, MenuItem::frameColor[1]);
     M5.Lcd.drawRect(r.x, r.y -1, r.w, r.h +2, MenuItem::frameColor[1]);
+    redraw = false;
+    treeView.update(true);
+  } else {
+    treeView.update();
   }
-  treeView.update(redraw);
-  redraw = false;
   header.draw();
 }
 
