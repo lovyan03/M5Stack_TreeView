@@ -260,7 +260,7 @@ void CallBackWiFiClient(MenuItem* sender)
     wifiClientPass = osk.getString();
     osk.close();
 
-    //_btnDrawer.draw();
+    redraw = true;
     WiFi.disconnect();
     WiFi.begin(mi->ssid.c_str(), wifiClientPass.c_str());
   } else {
