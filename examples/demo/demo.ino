@@ -16,6 +16,7 @@
 #include "I2CScanner.h"
 #include "MPU9250Demo.h"
 #include "ScrollDemo.h"
+#include "WiFiWPS.h"
 
 M5TreeView treeView;
 M5OnScreenKeyboard osk;
@@ -72,6 +73,7 @@ void setup() {
                  } )
                , new MenuItem("WiFi ", vmi
                  { new MenuItemWiFiClient("WiFi Client", CallBackWiFiClient)
+                 , new MenuItem("WiFi WPS", WiFiWPS())
                  , new MenuItem("WiFi mode", vmi
                    { new MenuItem("WiFi disconnect(true)", 2000)
                    , new MenuItem("WiFi mode OFF", 2001)
