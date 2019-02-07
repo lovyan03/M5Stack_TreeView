@@ -45,8 +45,6 @@ public:
         M5.Lcd.println("\r\nConnected to :" + WiFi.SSID());
         M5.Lcd.print("Got IP: ");
         M5.Lcd.println(WiFi.localIP());
-        M5.Lcd.print("PASSKEY: ");
-        M5.Lcd.println(WiFi.psk());
         break;
       case SYSTEM_EVENT_STA_DISCONNECTED:
         M5.Lcd.println("Disconnected from station, attempting reconnection");
@@ -110,7 +108,7 @@ public:
         preferences.end();
         M5.Lcd.println("Save preferences.");
         M5.Lcd.println("WIFI_SSID  : " + WiFi.SSID());
-        M5.Lcd.println("WIFI_PASSWD : "+ WiFi.psk());
+      //M5.Lcd.println("WIFI_PASSWD : "+ WiFi.psk());
       }
     }
     return !M5.BtnA.wasReleased();
