@@ -1,5 +1,5 @@
-#ifndef _MenuItemSD_H_
-#define _MenuItemSD_H_
+#ifndef _MENUITEMSD_H_
+#define _MENUITEMSD_H_
 
 #include <MenuItemFS.h>
 

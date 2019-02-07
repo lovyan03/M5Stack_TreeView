@@ -1,5 +1,5 @@
-#ifndef _MenuItemSPIFFS_H_
-#define _MenuItemSPIFFS_H_
+#ifndef _MENUITEMSPIFFS_H_
+#define _MENUITEMSPIFFS_H_
 
 #include <MenuItemFS.h>
 

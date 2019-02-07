@@ -23,7 +23,7 @@ HeaderSample header;
 
 typedef std::vector<MenuItem*> vmi;
 
-template <typename T>
+template <class T>
 void CallBackExec(MenuItem* sender)
 {
   T menucallback;
