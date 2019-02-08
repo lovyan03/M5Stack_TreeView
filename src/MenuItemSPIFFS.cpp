@@ -2,8 +2,6 @@
 #include <SPIFFS.h>
 #include <SD.h>
 
-static SDUpdater sdUpdater;
-
 MenuItemFS* MenuItemSPIFFS::newMenuItemFS(const String& title, const String& path, bool isdir) const
 {
   return new MenuItemSPIFFS(title, path, isdir);
