@@ -1,6 +1,5 @@
 #include <MenuItemSPIFFS.h>
 #include <SPIFFS.h>
-#include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater/
 #include <SD.h>
 
 static SDUpdater sdUpdater;
