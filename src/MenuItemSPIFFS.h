@@ -15,6 +15,7 @@ public:
   MenuItemSPIFFS(const String& title, const String& path, bool isdir)
   : MenuItemFS(title, path, isdir) {};
 
+  virtual void onEnter();
 
 protected:
   virtual MenuItemFS* newMenuItemFS(const String& title, const String& path, bool isdir) const;
