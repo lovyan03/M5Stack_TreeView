@@ -589,15 +589,44 @@ boolean FtpServer::processCommand()
   //
   else if( ! strcmp( command, "MKD" ))
   {
-	  client.println( "550 Can't create \"" + String(parameters));  //not support on espyet
+    char path[ FTP_CWD_SIZE ];
+    if( strlen( parameters ) == 0 )
+      client.println( "501 No file name");
+    else if( makePath( path ))
+    {
+      if( SD.exists( path )) {
+        client.println( "521 \"" + String(parameters) + ("\" directory already exists"));
+      }
+      else
+      {
+        if( SD.mkdir( path ))
+         client.println( "257 \"" + String(parameters) + "\" created");
+        else
+         client.println( "550 Can't create \"" + String(parameters));
+      }
+    }
   }
   //
   //  RMD - Remove a Directory 
   //
   else if( ! strcmp( command, "RMD" ))
   {
-	  client.println( "501 Can't delete \"" +String(parameters));
-	
+    char path[ FTP_CWD_SIZE ];
+    if( strlen( parameters ) == 0 )
+      client.println( "501 No file name");
+    else if( makePath( path ))
+    {
+      if( ! SD.exists( path )) {
+        client.println( "550 " + String(path) + " not found.");
+      }
+      else
+      {
+        if( SD.rmdir( path ))
+          client.println( "250 \"" + String(parameters) + "\" deleted");
+        else
+          client.println( "501 Can't delete \"" +String(parameters));
+      }
+    }
   }
   //
   //  RNFR - Rename From 
