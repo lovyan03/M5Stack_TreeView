@@ -9,6 +9,7 @@
 
 #include "MenuItemSDUpdater.h"
 #include "HeaderSample.h"
+#include "CBFTPserver.h"
 
 M5TreeView treeView;
 M5OnScreenKeyboard osk;
@@ -19,6 +20,11 @@ typedef std::vector<MenuItem*> vmi;
 void setup() {
   M5.begin();
   Wire.begin();
+
+  Preferences preferences;
+  preferences.begin("wifi-config");
+  WiFi.begin(preferences.getString("WIFI_SSID").c_str(), preferences.getString("WIFI_PASSWD").c_str());
+  preferences.end();
 
   treeView.clientRect.x = 2;
   treeView.clientRect.y = 16;
@@ -42,6 +48,7 @@ void setup() {
                , new MenuItemSDUpdater("SD Updater")
                , new MenuItemSD("SD card")
                , new MenuItemSPIFFS("SPIFFS")
+               , new MenuItem("FTP server", CBFTPserver())
                });
   treeView.begin();
 }
@@ -94,3 +101,4 @@ void CallBackWiFiClient(MenuItem* sender)
   preferences.end();
   while (M5.BtnA.isPressed()) M5.update();
 }
+
