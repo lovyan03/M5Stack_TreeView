@@ -36,7 +36,7 @@ void MenuItemWiFiClient::scanWiFi()
 {
   trimFillRect( rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2, backColor[1]);
   drawTitle(true, "WiFi Scanning...");
-
+  if (WiFi.status() != WL_CONNECTED) WiFi.disconnect();
   int count = WiFi.scanNetworks();
 
   deleteItems();
