@@ -62,8 +62,8 @@ void setup() {
                , new MenuItem("Tools", vmi
                  { new MenuItem("System Info", SystemInfo())
                  , new MenuItem("I2C Scanner", I2CScanner())
+                 , new MenuItem("FTP server", CBFTPserver())
                  } )
-               , new MenuItem("FTP server", CBFTPserver())
                , new MenuItemSDUpdater("SD Updater")
                , new MenuItemSD("SD card")
                , new MenuItemSPIFFS("SPIFFS")
