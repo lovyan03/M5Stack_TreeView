@@ -10,8 +10,9 @@ void setup() {
   M5.begin();
   Wire.begin();
 
-  treeView.useFACES = true;
-  treeView.useJoyStick = true;
+  treeView.useFACES       = true;
+  treeView.useCardKB      = true;
+  treeView.useJoyStick    = true;
   treeView.usePLUSEncoder = true;
   treeView.clientRect.y = 10;
   treeView.clientRect.h = 216;

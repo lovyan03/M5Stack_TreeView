@@ -24,6 +24,7 @@ public:
   static int16_t titleOffset;
   static int16_t font;
   static bool useFACES;
+  static bool useCardKB;
   static bool useJoyStick;
   static bool usePLUSEncoder;
 
@@ -47,12 +48,14 @@ public:
 
   void drawTitle(bool selected);
   void drawTitle(bool selected, const String& text);
+  void drawText(String text, int16_t x, int16_t y);
   void focusBack();
   void focusNext();
   void focusPrev();
   bool focusEnter();
   void setFocusItem(MenuItem* newmi);
-  MenuItem* draw(MenuItem* nextmi = NULL, bool force = true, const Rect16* forceRect = 0, const Rect16* prevforceRect = 0);
+  MenuItem* draw(bool force = true, const Rect16* forceRect = 0, const Rect16* prevforceRect = 0, MenuItem* nextmi = NULL);
+  MenuItem* erase(bool force = true, MenuItem* nextmi = NULL);
 
   virtual void onEnter();
   virtual void onExit() { }

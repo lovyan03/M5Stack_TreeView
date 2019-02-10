@@ -36,6 +36,16 @@ static char facesKey;
 static char facesPrev;
 static bool flgFACESKB;
 
+M5TreeView::eCmd M5TreeView::checkKB(char key) {
+  switch ((uint8_t)key) {
+  case 'w': case 'W': case 0x80:            return eCmd::PREV;
+  case 'a': case 'A': case 0x81: case 0x08: return eCmd::BACK;
+  case 's': case 'S': case 0x82:            return eCmd::NEXT;
+  case 'd': case 'D': case 0x83: case 0x20: return eCmd::ENTER;
+  }
+  return eCmd::NONE;
+}
+
 M5TreeView::eCmd M5TreeView::checkInput() {
   M5.update();
   eCmd res = eCmd::NONE;
@@ -61,7 +71,9 @@ M5TreeView::eCmd M5TreeView::checkInput() {
       if (facesKey == 0xff)   { flgFACESKB = false; }
       else if (facesKey == 0) { flgFACESKB = true; }
       else press = true;
-      if (!flgFACESKB) {
+      if (flgFACESKB) {
+        res = checkKB(facesKey);
+      } else {
         if (facesKey != 0xff && canRepeat) {
           ++_repeat;
           if (0 == (facesKey & 0x01) ) { res = eCmd::PREV; }
@@ -74,8 +86,17 @@ M5TreeView::eCmd M5TreeView::checkInput() {
         else if ((0 != (facesKey & 0x10))&&(0 == (facesPrev & 0x10))) { res = eCmd::ENTER; }
       }
     }
+    if (res != eCmd::NONE) return res;
   }
-
+  if (useCardKB && Wire.requestFrom(0x5F, 1)) {
+    while (Wire.available()){
+      char key = Wire.read();
+      if (key == 0)  { continue; }
+      press = true;
+      res = checkKB(key);
+    }
+    if (res != eCmd::NONE) return res;
+  }
   if (usePLUSEncoder && PLUSEncoder.update()) {
     if (PLUSEncoder.wasUp())       { return eCmd::PREV;  }
     if (PLUSEncoder.wasDown())     { return eCmd::NEXT;  }
@@ -105,58 +126,58 @@ M5TreeView::eCmd M5TreeView::checkInput() {
   return res;
 }
 
-MenuItem* M5TreeView::update(bool force) {
+MenuItem* M5TreeView::update(bool redraw) {
   while (millis() - _msec < 16) delay(1);
   _msec = millis();
 
+  redraw |= _redraw;
+  _redraw = false;
   eCmd cmd = checkInput();
 
-  if (force) M5.Lcd.fillRect(clientRect.x, clientRect.y, clientRect.w, clientRect.h, backgroundColor);
-
-  if (cmd != eCmd::NONE)
-  {
+  if (cmd != eCmd::NONE) {
     _msecLast = _msec;
-    if (move(true) || !_cursorRect.equal(focusItem->destRect)) {
-      draw(NULL, true, &focusItem->destRect, &_cursorRect);
-      _cursorRect = focusItem->destRect;
-      //move();
-    }
     active = true;
+  }
+  bool moveFocus = (!_cursorRect.equal(focusItem->destRect));
+  active = move(cmd != eCmd::NONE) || moveFocus;
+  if (active || redraw) {
+    erase(redraw);
+    if (moveFocus) {
+      const Rect16& c = _cursorRect;
+      Rect16 r = cmd != eCmd::NONE ? focusItem->destRect : c.mixRect(focusItem->destRect);
+      draw(redraw, &r, &_cursorRect);
+      _cursorRect = r;
+      active = true;
+    } else {
+      draw(redraw, &_cursorRect);
+    }
   }
 
   if (cmd != eCmd::NONE || M5.BtnA.wasPressed() || M5.BtnA.wasReleased()) {
     updateButtons();
     _btnDrawer.draw(true);
   } else {
-    _btnDrawer.draw(force);
+    _btnDrawer.draw(redraw);
   }
 
   MenuItem* res = NULL;
   switch (cmd) {
   case eCmd::PREV:  focusPrev();   break;
   case eCmd::NEXT:  focusNext();   break;
-  case eCmd::BACK:  focusBack();   res = focusItem; break;
-  case eCmd::ENTER: res = focusItem; force = focusEnter(); break;
-  }
-  if (cmd == eCmd::HOLD) {
+  case eCmd::BACK:  focusBack();
+    res = focusItem;
+    break;
+  case eCmd::ENTER:
+    res = focusItem;
+    _redraw = focusEnter();
+    break;
+  case eCmd::HOLD:
     Rect16 rtmp = focusItem->rect;
     rtmp = clientRect.intersect(rtmp);
     M5.Lcd.drawRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, frameColor[1]);
-  } else
-  if (active || force) {
-    scrollTarget(focusItem);
-
-    active = move();
-    if (!_cursorRect.equal(focusItem->destRect)) { // カーソル移動
-      const Rect16& c = _cursorRect;
-      Rect16 r = c.mixRect(focusItem->destRect);
-      draw(NULL, force, &r, &_cursorRect);
-      _cursorRect = r;
-      active = true;
-    } else {
-      draw(NULL, force, &_cursorRect);
-    }
+    break;
   }
+  if (cmd != eCmd::NONE) scrollTarget(focusItem);
   return res;
 }
 

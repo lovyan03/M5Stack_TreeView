@@ -15,6 +15,7 @@ uint16_t MenuItem::backgroundColor = 0x0000;
 uint32_t MenuItem::msecHold = 300;
 uint32_t MenuItem::msecRepeat = 150;
 bool MenuItem::useFACES = false;
+bool MenuItem::useCardKB = false;
 bool MenuItem::useJoyStick = false;
 bool MenuItem::usePLUSEncoder = false;
 
@@ -108,7 +109,6 @@ void MenuItem::drawTitle(bool selected)
   drawTitle(selected, title);
 }
 
-
 void MenuItem::drawTitle(bool selected, const String& text)
 {
   int16_t fh = M5.Lcd.fontHeight(font);
@@ -117,12 +117,24 @@ void MenuItem::drawTitle(bool selected, const String& text)
   int lf = text.indexOf('\n');
   if (lf >= 0) {
     String sub = text.substring(0, lf);
-    M5.Lcd.drawString(sub,  rect.x + titleOffset, rect.y + rect.h / 2 - fh, font);
+    drawText(sub, rect.x + titleOffset, rect.y + rect.h / 2 - fh);
     sub = text.substring(lf + 1);
-    M5.Lcd.drawString(sub,  rect.x + titleOffset, rect.y + rect.h / 2, font);
+    drawText(sub, rect.x + titleOffset, rect.y + rect.h / 2);
   } else {
-    M5.Lcd.drawString(text,  rect.x + titleOffset, rect.y + (rect.h - fh) / 2, font);
+    drawText(text, rect.x + titleOffset, rect.y + (rect.h - fh) / 2);
   }
+}
+
+void MenuItem::drawText(String text, int16_t x, int16_t y)
+{
+  while (text != "") {
+    int w = M5.Lcd.textWidth(text);
+    int over = (x + w) - rect.right();
+    if (0 < over) {
+      text = text.substring(0, text.length() - 1 - over / 6);
+    } else break;
+  }
+  M5.Lcd.drawString(text, rect.x + titleOffset, y, font);
 }
 
 void MenuItem::focusBack() {
@@ -206,76 +218,15 @@ void MenuItem::onAfterDraw()
   }
 }
 
-MenuItem* MenuItem::draw(MenuItem* nextmi, bool force, const Rect16* cursorRect, const Rect16* oldCursorRect)
+MenuItem* MenuItem::draw(bool force, const Rect16* cursorRect, const Rect16* oldCursorRect, MenuItem* nextmi)
 {
   if (!Items.empty()) {
     for (std::vector<MenuItem*>::reverse_iterator it = Items.rbegin(); it != Items.rend(); ++it) {
       if ((*it)->visible) {
-        nextmi = (*it)->draw(nextmi, force || nextmi && nextmi->_moving, cursorRect, oldCursorRect);
+        nextmi = (*it)->draw(force || nextmi && nextmi->_moving, cursorRect, oldCursorRect, nextmi);
       }
     }
   }
-  if (nextmi == NULL) {
-    if (rect.y < _oldRect.y) {
-      trimFillRect( rect.x
-                  , rect.bottom()
-                  , _oldRect.right() - rect.x
-                  , _oldRect.bottom() - rect.y
-                  , backgroundColor);
-    }
-  } else {
-    // left top erase
-    if (nextmi->rect.x < rect.x && nextmi->_oldRect.y < nextmi->rect.y) {
-      trimFillRect( nextmi->rect.x
-                  , nextmi->_oldRect.y
-                  , rect.x - nextmi->rect.x
-                  , nextmi->rect.y - nextmi->_oldRect.y
-                  , backgroundColor); //(millis() << 3) & 0xFFFF); // 
-    }
-    // right top erase
-    if (rect.right() < nextmi->rect.right() && nextmi->_oldRect.y < nextmi->rect.y) {
-      trimFillRect( rect.right()
-                  , nextmi->_oldRect.y
-                  , nextmi->rect.right() - rect.right()
-                  , nextmi->rect.y - nextmi->_oldRect.y
-                  , backgroundColor);
-    }
-    // right bottom erase
-    if (nextmi->rect.right() < rect.right() && rect.y < _oldRect.y) {
-      trimFillRect( nextmi->rect.right()
-                  , rect.bottom()
-                  , rect.right() - nextmi->rect.right()
-                  , _oldRect.bottom() - rect.bottom()
-                  , backgroundColor);
-    }
-    // right erase
-    if (!Items.empty() && nextmi->rect.right() < nextmi->_oldRect.right()) {
-      trimFillRect( nextmi->rect.right()
-                  , nextmi->_oldRect.y
-                  , nextmi->_oldRect.right() - nextmi->rect.right()
-                  , Items.back()->_oldRect.bottom() - nextmi->_oldRect.y
-                  , backgroundColor); // (millis() << 3) & 0xFFFF); // 
-    }
-    // left erase
-    if (!Items.empty()) {
-      if (nextmi->_oldRect.x < nextmi->rect.x) {
-        trimFillRect( nextmi->_oldRect.x
-                    , rect.bottom()
-                    , nextmi->rect.x - nextmi->_oldRect.x
-                    , Items.back()->_oldRect.bottom() - rect.bottom()
-                    , backgroundColor); // (millis() << 3) & 0xFFFF); // 
-      }
-    // left bottom erase
-      if (_oldRect.x < nextmi->rect.x && rect.bottom() < _oldRect.bottom()) {
-        trimFillRect( _oldRect.x
-                    , rect.bottom()
-                    , nextmi->rect.x - _oldRect.x
-                    , _oldRect.y - rect.y
-                    , backgroundColor); // (millis() << 3) & 0xFFFF); // 
-      }
-    }
-  }
-
   if ( force || _moving 
    || (nextmi && nextmi->_moving) 
    || (cursorRect && rect.intersectsWith(*cursorRect))
@@ -308,9 +259,8 @@ MenuItem* MenuItem::draw(MenuItem* nextmi, bool force, const Rect16* cursorRect,
         bool cursor = cursorRect && cursorRect->intersectsWith(rtmp);
         // fill item body
         if (cursor) {
-        // fill cursor color
           Rect16 r = rtmp.intersect(*cursorRect);
-          if (0 < r.h) {
+          if (0 < r.h) {   // fill cursor color
             M5.Lcd.fillRect(rtmp.x, r.y, rtmp.w, r.h, backColor[1]);
           }
           if (cursorRect->y < rtmp.y) {
@@ -325,6 +275,90 @@ MenuItem* MenuItem::draw(MenuItem* nextmi, bool force, const Rect16* cursorRect,
           drawTitle(cursor);
           onAfterDraw();
         }
+      }
+    }
+  }
+  return this;
+}
+MenuItem* MenuItem::erase(bool force, MenuItem* nextmi)
+{
+  if (!Items.empty()) {
+    for (std::vector<MenuItem*>::reverse_iterator it = Items.rbegin(); it != Items.rend(); ++it) {
+      if ((*it)->visible) {
+        nextmi = (*it)->erase(force, nextmi);
+      }
+    }
+  }
+  if (nextmi == NULL) {
+    if (force || rect.y < _oldRect.y) {
+      trimFillRect( force ? clientRect.x : rect.x
+                  , rect.bottom()
+                  , force ? clientRect.w : (_oldRect.right() - rect.x)
+                  , (force ? clientRect.bottom() : _oldRect.bottom()) - rect.y
+                  , backgroundColor);
+    }
+  }
+
+  if (force) {
+      trimFillRect( clientRect.x
+                  , rect.y
+                  , rect.x - clientRect.x
+                  , rect.h
+                  , backgroundColor);
+      trimFillRect( rect.right()
+                  , rect.y
+                  , clientRect.right() - rect.right()
+                  , rect.h
+                  , backgroundColor);
+  } else if (nextmi != NULL) {
+    // left top erase
+    if (nextmi->rect.x < rect.x && nextmi->_oldRect.y < nextmi->rect.y) {
+      trimFillRect( nextmi->rect.x
+                  , nextmi->_oldRect.y
+                  , rect.x - nextmi->rect.x
+                  , nextmi->rect.y - nextmi->_oldRect.y
+                  , backgroundColor);
+    }
+    // right top erase
+    if (rect.right() < nextmi->rect.right() && nextmi->_oldRect.y < nextmi->rect.y) {
+      trimFillRect( rect.right()
+                  , nextmi->_oldRect.y
+                  , nextmi->rect.right() - rect.right()
+                  , nextmi->rect.y - nextmi->_oldRect.y
+                  , backgroundColor);
+    }
+    // right bottom erase
+    if (nextmi->rect.right() < rect.right() && rect.y < _oldRect.y) {
+      trimFillRect( nextmi->rect.right()
+                  , rect.bottom()
+                  , rect.right() - nextmi->rect.right()
+                  , _oldRect.bottom() - rect.bottom()
+                  , backgroundColor);
+    }
+    // right erase
+    if (!Items.empty() && nextmi->rect.right() < nextmi->_oldRect.right()) {
+      trimFillRect( nextmi->rect.right()
+                  , nextmi->_oldRect.y
+                  , nextmi->_oldRect.right() - nextmi->rect.right()
+                  , Items.back()->_oldRect.bottom() - nextmi->_oldRect.y
+                  , backgroundColor);
+    }
+    // left erase
+    if (!Items.empty()) {
+      if (nextmi->_oldRect.x < nextmi->rect.x) {
+        trimFillRect( nextmi->_oldRect.x
+                    , rect.bottom()
+                    , nextmi->rect.x - nextmi->_oldRect.x
+                    , Items.back()->_oldRect.bottom() - rect.bottom()
+                    , backgroundColor);
+      }
+    // left bottom erase
+      if (_oldRect.x < nextmi->rect.x && rect.bottom() < _oldRect.bottom()) {
+        trimFillRect( _oldRect.x
+                    , rect.bottom()
+                    , nextmi->rect.x - _oldRect.x
+                    , _oldRect.y - rect.y
+                    , backgroundColor);
       }
     }
   }

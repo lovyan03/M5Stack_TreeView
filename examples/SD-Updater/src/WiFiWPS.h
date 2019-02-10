@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <esp_wps.h>
 #include <Preferences.h>
+#include <MenuCallBack.h>
 
 
 class WiFiWPS : public MenuCallBack

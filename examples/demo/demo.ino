@@ -3,7 +3,7 @@
 #include <SPIFFS.h>
 #include <M5Stack.h>
 #include <M5TreeView.h>
-#include <M5OnScreenKeyboard.h>
+#include <M5OnScreenKeyboard.h> // https://github.com/lovyan03/M5OnScreenKeyboard/
 #include <MenuItemWiFiClient.h>
 #include <MenuItemSD.h>
 #include <MenuItemSPIFFS.h>
@@ -12,11 +12,8 @@
 
 #include "HeaderSample.h"
 
-#include "SystemInfo.h"
-#include "I2CScanner.h"
 #include "MPU9250Demo.h"
 #include "ScrollDemo.h"
-#include "WiFiWPS.h"
 
 M5TreeView treeView;
 M5OnScreenKeyboard osk;
@@ -61,9 +58,7 @@ void setup() {
                  , new MenuItem("Style 5", 1005)
                  } )
                , new MenuItem("Demo", vmi
-                 { new MenuItem("System Info", CallBackExec<SystemInfo>)
-                 , new MenuItem("I2C Scanner", CallBackExec<I2CScanner>)
-                 , new MenuItem("MPU9250",     CallBackExec<MPU9250Demo>)
+                 { new MenuItem("MPU9250",     CallBackExec<MPU9250Demo>)
                  , new MenuItem("Scroll Demo", CallBackExec<ScrollDemo>)
                  } )
                , new MenuItem("Numeric Sample ", vmi
@@ -73,7 +68,6 @@ void setup() {
                  } )
                , new MenuItem("WiFi ", vmi
                  { new MenuItemWiFiClient("WiFi Client", CallBackWiFiClient)
-                 , new MenuItem("WiFi WPS", WiFiWPS())
                  , new MenuItem("WiFi mode", vmi
                    { new MenuItem("WiFi disconnect(true)", 2000)
                    , new MenuItem("WiFi mode OFF", 2001)
@@ -119,24 +113,23 @@ void setup() {
                } );
 
   treeView.begin();
+  drawFrame();
 }
 
+void drawFrame() {
+  Rect16 r = treeView.clientRect;
+  r.inflate(1);
+  M5.Lcd.drawRect(r.x -1, r.y, r.w +2, r.h, MenuItem::frameColor[1]);
+  M5.Lcd.drawRect(r.x, r.y -1, r.w, r.h +2, MenuItem::frameColor[1]);
+}
 uint32_t loopcounter = 0;
-bool redraw = true;
 void loop() {
-  bool fld_redraw = redraw;
-  if (redraw) {
-    Rect16 r = treeView.clientRect;
-    r.inflate(1);
-    M5.Lcd.fillScreen(treeView.backgroundColor);
-    M5.Lcd.drawRect(r.x -1, r.y, r.w +2, r.h, MenuItem::frameColor[1]);
-    M5.Lcd.drawRect(r.x, r.y -1, r.w, r.h +2, MenuItem::frameColor[1]);
-    redraw = false;
+  MenuItem* mi = treeView.update();
+  if (treeView.isRedraw()) {
+    drawFrame();
   }
   
   if (!(loopcounter % 10))  header.draw();
-
-  MenuItem* mi = treeView.update(fld_redraw);
 
   if (mi != NULL) {
     switch (mi->tag) {
@@ -241,8 +234,7 @@ void loop() {
       osk.frameColor[i]= treeView.frameColor[i];
     }
     M5ButtonDrawer::font = treeView.font;
-    
-    redraw = true;
+    M5.Lcd.fillRect(0, 218, M5.Lcd.width(), 22, 0);
   }
 }
 
@@ -264,7 +256,6 @@ void CallBackWiFiClient(MenuItem* sender)
     while (osk.loop()) { delay(1); }
     wifi_passwd = osk.getString();
     osk.close();
-    redraw = true;
     WiFi.disconnect();
     WiFi.begin(mi->ssid.c_str(), wifi_passwd.c_str());
     preferences.putString("WIFI_PASSWD", wifi_passwd);
@@ -317,7 +308,6 @@ void CallBackFS(MenuItem* sender)
   btnDrawer.setText("Back","","");
   btnDrawer.draw(true);
   while (!M5.BtnA.wasReleased()) M5.update();
-  redraw = true;
 }
 
 void FileView(File ff){
