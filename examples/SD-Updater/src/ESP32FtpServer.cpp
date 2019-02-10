@@ -713,7 +713,7 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
 	{
-		file = SD.open(path, "r");
+	  File file = SD.open(path, "r");
       if(!file)
          client.println( "450 Can't open " +String(parameters) );
       else
@@ -784,12 +784,14 @@ boolean FtpServer::doStore()
 {
   if( data.connected() )
   {
-    int16_t nb = data.readBytes((uint8_t*) buf, FTP_BUF_SIZE );
-    if( nb > 0 )
-    {
-      // Serial.println( millis() << " " << nb << endl;
-      file.write((uint8_t*) buf, nb );
-      bytesTransfered += nb;
+    for (;;) {
+      int16_t nb = data.readBytes((uint8_t*) buf, FTP_BUF_SIZE );
+      if( nb > 0 )
+      {
+        // Serial.println( millis() << " " << nb << endl;
+        file.write((uint8_t*) buf, nb );
+        bytesTransfered += nb;
+      } else break;
     }
     return true;
   }
