@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 //  2017: modified by @robo8080
+//  2019: modified by @lovyan03
 
 #include "ESP32FtpServer.h"
 
@@ -258,6 +259,9 @@ boolean FtpServer::processCommand()
     else if ( makePath( path ) && SD.exists( path ) ) {
       strcpy( cwdName, path );
       client.println( "250 Ok. Directory changed to " + String(cwdName) );
+    }
+    else {
+      client.println( "550 File " + String(parameters) + " not found");
     }
   }
 
