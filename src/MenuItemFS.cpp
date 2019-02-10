@@ -19,8 +19,10 @@ void MenuItemFS::onEnter() {
     file = root.openNextFile();
   }
   root.close();
+  std::sort(Items.begin(), Items.end(), compareIgnoreCase);
   if (!filesItems.empty()) {
     // ファイルがあればまとめて追加する
+    std::sort(filesItems.begin(), filesItems.end(), compareIgnoreCase);
     addItems(filesItems);
   }
   MenuItem::onEnter();

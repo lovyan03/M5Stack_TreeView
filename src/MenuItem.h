@@ -78,6 +78,7 @@ protected:
   static MenuItem* focusItem;
   static M5ButtonDrawer _btnDrawer;
   static void trimFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+  static bool compareIgnoreCase(MenuItem* lhs, MenuItem* rhs);
 
   bool move(bool force = false);
   void scrollDestRectY(int16_t add_y);

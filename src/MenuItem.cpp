@@ -384,6 +384,15 @@ void MenuItem::trimFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t
   if (x < r && y < b) M5.Lcd.fillRect(x, y, r - x, b - y, color);
 }
 
+bool MenuItem::compareIgnoreCase(MenuItem* lhs, MenuItem* rhs)
+{
+  String lstr ( lhs->title );
+  String rstr ( rhs->title );
+  lstr.toLowerCase();
+  rstr.toLowerCase();
+  return lstr < rstr;
+}
+
 void MenuItem::scrollDestRectY(int16_t add_y)
 {
   destRect.y += add_y;

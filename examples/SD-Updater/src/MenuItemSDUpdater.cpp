@@ -26,6 +26,7 @@ void MenuItemSDUpdater::onEnter() {
         }
       }
       file = root.openNextFile();
+      std::sort(Items.begin(), Items.end(), compareIgnoreCase);
     }
     root.close();
   } else {
@@ -48,6 +49,3 @@ void MenuItemSDUpdater::onDefocus() {
   M5.Lcd.fillRect(200, 30, 120, 140, backgroundColor);
 }
 
-void MenuItemSDUpdater::onAfterDraw()
-{
-}
