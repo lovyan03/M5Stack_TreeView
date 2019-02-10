@@ -97,7 +97,6 @@ public:
   bool loop()
   {
     M5.update();
-    delay(10);
 
     if (WiFi.status() == WL_CONNECTED) {
       btnDrawer.setText(2, "Save");
@@ -107,7 +106,7 @@ public:
         preferences.putString("WIFI_SSID", WiFi.SSID());
         preferences.putString("WIFI_PASSWD", WiFi.psk());
         preferences.end();
-        M5.Lcd.println("Save preferences.");
+        M5.Lcd.println("preferences Saved.");
         M5.Lcd.println("WIFI_SSID  : " + WiFi.SSID());
       //M5.Lcd.println("WIFI_PASSWD : "+ WiFi.psk());
       }
@@ -118,11 +117,10 @@ public:
   void close()
   {
     closing = true;
-    esp_wifi_wps_disable();
-    delay(10);
-    WiFi.disconnect(true);
-    delay(10);
     WiFi.removeEvent(onevent);
+    delay(100);
+    esp_wifi_wps_disable();
+    delay(100);
   }
 private:
 };

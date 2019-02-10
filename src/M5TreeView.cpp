@@ -1,6 +1,8 @@
 #include <M5TreeView.h>
 #include <M5PLUSEncoder.h>
 #include <M5JoyStick.h>
+#undef min
+#include <algorithm>
 
 static bool active = false;
 static bool btnALong = false;
@@ -11,7 +13,7 @@ int16_t M5TreeView::updateDestRect(MenuItem* mi, int16_t x, int16_t y) {
     mi->Items[i]->destRect.x = x;
     mi->Items[i]->destRect.y = y;
     mi->Items[i]->destRect.h = itemHeight;
-    mi->Items[i]->destRect.w = itemWidth;
+    mi->Items[i]->destRect.w = std::min((int)itemWidth, (int)clientRect.right() - x);
     y += itemHeight;
     y = mi->Items[i]->updateDestRect(mi->Items[i], x + treeOffset, y);
   }
@@ -38,10 +40,10 @@ static bool flgFACESKB;
 
 M5TreeView::eCmd M5TreeView::checkKB(char key) {
   switch ((uint8_t)key) {
-  case 'w': case 'W': case 0x80:            return eCmd::PREV;
-  case 'a': case 'A': case 0x81: case 0x08: return eCmd::BACK;
-  case 's': case 'S': case 0x82:            return eCmd::NEXT;
-  case 'd': case 'D': case 0x83: case 0x20: return eCmd::ENTER;
+  case 'w': case 'W': case 0x80: case 0xB5:            return eCmd::PREV;
+  case 'a': case 'A': case 0x81: case 0xB4: case 0x08: return eCmd::BACK;
+  case 's': case 'S': case 0x82: case 0xB6:            return eCmd::NEXT;
+  case 'd': case 'D': case 0x83: case 0xB7: case 0x20: return eCmd::ENTER;
   }
   return eCmd::NONE;
 }
