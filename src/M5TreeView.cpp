@@ -157,11 +157,9 @@ MenuItem* M5TreeView::update(bool redraw) {
 
   if (cmd != eCmd::NONE || M5.BtnA.wasPressed() || M5.BtnA.wasReleased()) {
     updateButtons();
-    _btnDrawer.draw(true);
-  } else {
-    _btnDrawer.draw(redraw);
   }
-
+  _btnDrawer.draw(redraw);
+  MenuItem* oldFocus = focusItem;
   MenuItem* res = NULL;
   switch (cmd) {
   case eCmd::PREV:  focusPrev();   break;
@@ -169,17 +167,17 @@ MenuItem* M5TreeView::update(bool redraw) {
   case eCmd::BACK:  focusBack();
     res = focusItem;
     break;
-  case eCmd::ENTER:
-    res = focusItem;
-    _redraw = focusEnter();
-    break;
-  case eCmd::HOLD:
+  case eCmd::ENTER: case eCmd::HOLD:
     Rect16 rtmp = focusItem->rect;
     rtmp = clientRect.intersect(rtmp);
     M5.Lcd.drawRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, frameColor[1]);
+    if (cmd == eCmd::ENTER) {
+      res = focusItem;
+      _redraw = focusEnter();
+    }
     break;
   }
-  if (cmd != eCmd::NONE) scrollTarget(focusItem);
+  if (oldFocus != focusItem) scrollTarget(focusItem);
   return res;
 }
 

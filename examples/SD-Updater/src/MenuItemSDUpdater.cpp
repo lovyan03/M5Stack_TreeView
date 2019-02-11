@@ -49,3 +49,6 @@ void MenuItemSDUpdater::onDefocus() {
   M5.Lcd.fillRect(200, 30, 120, 140, backgroundColor);
 }
 
+void MenuItemSDUpdater::onAfterDraw()
+{
+}

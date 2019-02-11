@@ -423,8 +423,11 @@ void MenuItem::scrollTarget(MenuItem* mi)
 }
 
 void MenuItem::updateButtons() {
-  _btnDrawer.setText("Back/Prev","Next","Ok");
   if (M5.BtnA.isPressed()) {
     _btnDrawer.setText(0, M5.BtnA.pressedFor(msecHold) ? "Prev" : "Back");
+  } else {
+    _btnDrawer.setText(0, "Back/Prev");
   }
+  _btnDrawer.setText(1, "Next");
+  _btnDrawer.setText(2, "Ok");
 }
