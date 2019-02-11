@@ -1,21 +1,23 @@
-#ifndef _CBFTPSERVER_H_
-#define _CBFTPSERVER_H_
+#ifndef _CBFTPSERVERSPIFFS_H_
+#define _CBFTPSERVERSPIFFS_H_
 
 #include <MenuCallBack.h>
+#include <SPIFFS.h>
 #include "ESP32FtpServer.h"
 
-class CBFTPserver : public MenuCallBack
+class CBFTPserverSPIFFS : public MenuCallBack
 {
 public:
-  FtpServer ftpSrv;
+  FtpServerSPIFFS ftpSrv;
 
   bool setup(){
+    SPIFFS.begin();
     ftpSrv.begin("esp32","esp32");    //username, password for ftp.  set ports in ESP32FtpServer.h  (default 21, 50009 for PASV)
     M5.Lcd.fillScreen(0);
     M5.Lcd.setTextColor(0xFFFF);
     M5.Lcd.setCursor(0,20);
-    M5.Lcd.fillRect(0,M5.Lcd.getCursorY()-2, TFT_HEIGHT, 12, 0x00F8);
-    M5.Lcd.print("  FTP Server (SDcard)\r\n\r\n");
+    M5.Lcd.fillRect(0,M5.Lcd.getCursorY()-2, TFT_HEIGHT, 12, 0x0400);
+    M5.Lcd.print("  FTP Server (SPIFFS)\r\n\r\n");
     M5.Lcd.println("host : " + WiFi.localIP().toString());
     M5.Lcd.print("user : esp32\r\npass : esp32\r\n\r\n");
     M5.Lcd.print("ftp://esp32:esp32@" + WiFi.localIP().toString() + "/");

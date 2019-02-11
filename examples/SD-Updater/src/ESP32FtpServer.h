@@ -33,7 +33,6 @@
 #define FTP_SERVERESP_H
 
 //#include "Streaming.h"
-#include "SD.h"
 #include <FS.h>
 #include <WiFiClient.h>
 
@@ -53,8 +52,7 @@ class FtpServer
 public:
   void    begin(String uname, String pword);
   void    handleFTP();
-
-private:
+protected:
   void    iniVariables();
   void    clientConnected();
   void    disconnectClient();
@@ -98,8 +96,12 @@ private:
   String   _FTP_USER;
   String   _FTP_PASS;
 
-  
+  virtual FS& fs() const;
+};
 
+class FtpServerSPIFFS : public FtpServer
+{
+  virtual FS& fs() const;
 };
 
 #endif // FTP_SERVERESP_H

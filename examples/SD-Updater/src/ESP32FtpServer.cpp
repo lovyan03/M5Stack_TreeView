@@ -26,8 +26,9 @@
 #include <WiFiClient.h>
 //#include <ESP32WebServer.h>
 #include <FS.h>
-#include "SD.h"
-#include "SPI.h"
+#include <SD.h>
+#include <SPIFFS.h>
+#include <SPI.h>
 
 //#define FTP_DEBUG
 
@@ -240,7 +241,7 @@ boolean FtpServer::processCommand()
       if( ok )
       {
         * pSep = 0;
-        ok = SD.exists( cwdName );
+        ok = fs().exists( cwdName );
       }
     }
     // if an error appends, move to root
@@ -256,7 +257,7 @@ boolean FtpServer::processCommand()
     char path[ FTP_CWD_SIZE ];
     if( strlen( parameters ) == 0 )
       client.println( "501 No file name");
-    else if ( makePath( path ) && SD.exists( path ) ) {
+    else if ( makePath( path ) && fs().exists( path ) ) {
       strcpy( cwdName, path );
       client.println( "250 Ok. Directory changed to " + String(cwdName) );
     }
@@ -387,11 +388,11 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-      if( ! SD.exists( path ))
+      if( ! fs().exists( path ))
         client.println( "550 File " + String(parameters) + " not found");
       else
       {
-        if( SD.remove( path ))
+        if( fs().remove( path ))
           client.println( "250 Deleted " + String(parameters) );
         else
           client.println( "450 Can't delete " + String(parameters));
@@ -409,9 +410,9 @@ boolean FtpServer::processCommand()
     {
       client.println( "150 Accepted data connection");
       uint16_t nm = 0;
-//      Dir dir=SD.openDir(cwdName);
-      File dir=SD.open(cwdName);
-//      if( !SD.exists(cwdName))
+//      Dir dir=fs().openDir(cwdName);
+      File dir=fs().open(cwdName);
+//      if( !fs().exists(cwdName))
      if((!dir)||(!dir.isDirectory()))
         client.println( "550 Can't open directory " + String(cwdName) );
       else
@@ -453,10 +454,10 @@ boolean FtpServer::processCommand()
     {
 	  client.println( "150 Accepted data connection");
       uint16_t nm = 0;
-//      Dir dir= SD.openDir(cwdName);
-      File dir= SD.open(cwdName);
+//      Dir dir= fs().openDir(cwdName);
+      File dir= fs().open(cwdName);
       char dtStr[ 15 ];
-    //  if(!SD.exists(cwdName))
+    //  if(!fs().exists(cwdName))
      if((!dir)||(!dir.isDirectory()))
         client.println( "550 Can't open directory " +String(cwdName) );
 //        client.println( "550 Can't open directory " +String(parameters) );
@@ -500,9 +501,9 @@ boolean FtpServer::processCommand()
     {
       client.println( "150 Accepted data connection");
       uint16_t nm = 0;
-//      Dir dir=SD.openDir(cwdName);
-      File dir= SD.open(cwdName);
-      if( !SD.exists( cwdName ))
+//      Dir dir=fs().openDir(cwdName);
+      File dir= fs().open(cwdName);
+      if( !fs().exists( cwdName ))
         client.println( "550 Can't open directory " + String(parameters));
       else
       {
@@ -538,7 +539,7 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
 	{
-		file = SD.open(path, "r");
+		file = fs().open(path, "r");
       if( !file)
         client.println( "550 File " +String(parameters)+ " not found");
       else if( !file )
@@ -568,7 +569,7 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-		file = SD.open(path, "w");
+		file = fs().open(path, "w");
       if( !file)
         client.println( "451 Can't open/create " +String(parameters) );
       else if( ! dataConnect())
@@ -598,12 +599,12 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-      if( SD.exists( path )) {
+      if( fs().exists( path )) {
         client.println( "521 \"" + String(parameters) + ("\" directory already exists"));
       }
       else
       {
-        if( SD.mkdir( path ))
+        if( fs().mkdir( path ))
          client.println( "257 \"" + String(parameters) + "\" created");
         else
          client.println( "550 Can't create \"" + String(parameters));
@@ -620,12 +621,12 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-      if( ! SD.exists( path )) {
+      if( ! fs().exists( path )) {
         client.println( "550 " + String(path) + " not found.");
       }
       else
       {
-        if( SD.rmdir( path ))
+        if( fs().rmdir( path ))
           client.println( "250 \"" + String(parameters) + "\" deleted");
         else
           client.println( "501 Can't delete \"" +String(parameters));
@@ -642,7 +643,7 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( buf ))
     {
-      if( ! SD.exists( buf ))
+      if( ! fs().exists( buf ))
         client.println( "550 File " +String(parameters)+ " not found");
       else
       {
@@ -667,14 +668,14 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-      if( SD.exists( path ))
+      if( fs().exists( path ))
         client.println( "553 " +String(parameters)+ " already exists");
       else
       {          
             #ifdef FTP_DEBUG
 		  Serial.println("Renaming " + String(buf) + " to " + String(path));
             #endif
-            if( SD.rename( buf, path ))
+            if( fs().rename( buf, path ))
               client.println( "250 File successfully renamed or moved");
             else
 				client.println( "451 Rename/move failure");
@@ -717,7 +718,7 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
 	{
-	  File file = SD.open(path, "r");
+	  File file = fs().open(path, "r");
       if(!file)
          client.println( "450 Can't open " +String(parameters) );
       else
@@ -1012,4 +1013,8 @@ char * FtpServer::makeDateTimeStr( char * tstr, uint16_t date, uint16_t time )
            ( time & 0xF800 ) >> 11, ( time & 0x07E0 ) >> 5, ( time & 0x001F ) << 1 );            
   return tstr;
 }
+
+FS& FtpServer::fs() const { return SD; }
+
+FS& FtpServerSPIFFS::fs() const { return SPIFFS; }
 
