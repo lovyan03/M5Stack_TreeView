@@ -53,9 +53,8 @@ public:
   }
   bool loop()
   {
-    M5.update();
     delay(10);
-    return !M5.BtnA.wasReleased();
+    return true;
   }
 private:
   void printMac(uint8_t* mac) {

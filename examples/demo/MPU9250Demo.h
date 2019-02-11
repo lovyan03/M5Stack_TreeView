@@ -40,8 +40,6 @@ public:
 
   bool loop()
   {
-    M5.update();
-
     if (IMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
     {
       IMU.readAccelData(IMU.accelCount);
@@ -73,7 +71,7 @@ public:
       }
     }
 
-    return !M5.BtnA.wasReleased();
+    return true;
   }
 
   void gyromagSleep()

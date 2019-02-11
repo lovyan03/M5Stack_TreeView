@@ -8,9 +8,8 @@ class I2CScanner : public MenuCallBack
 public:
   bool loop()
   {
-    M5.update();
-
     M5.Lcd.setTextSize(1);
+    M5.Lcd.setTextColor(0xFFFF, 0);
     byte dummy = 0;
     for(byte adr = 0; adr <= 0x7F; adr++) {
       int x = (adr % 16) * 20;
@@ -25,7 +24,7 @@ public:
     }
     delay(10);
 
-    return !M5.BtnA.wasReleased();
+    return true;
   }
 };
 

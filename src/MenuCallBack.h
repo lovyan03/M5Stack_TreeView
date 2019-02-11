@@ -2,22 +2,25 @@
 #define _MENUCALLBACK_H_
 
 #include <M5Stack.h>
+#include <M5TreeView.h>
 #include <M5ButtonDrawer.h>
 
 class MenuItem;
-//void (* std::function<void(MenuItem*)>)(MenuItem *); 
 
 // メニュー選択時のコールバック
 struct MenuCallBack {
   M5ButtonDrawer btnDrawer;
-  virtual void operator()(MenuItem*) {
-    M5.Lcd.fillScreen(MenuItem::backgroundColor);
+  virtual void operator()(MenuItem* mi) {
+    M5TreeView* tv((M5TreeView*)(mi->topItem()));
+    M5TreeView::eCmd cmd;
+    M5.Lcd.fillScreen(0);
     btnDrawer.setText("Back","","");
     if (setup()) {
       byte i = -1;
       do {
+        cmd = tv->checkInput();
         btnDrawer.draw(0 == (++i & 0x0F));
-      } while (loop());
+      } while (cmd != M5TreeView::eCmd::BACK && loop());
       close();
       M5.Lcd.fillScreen(MenuItem::backgroundColor);
     }

@@ -31,7 +31,6 @@ public:
   MenuItem* const parentItem() const { return _parentItem; }
   MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }
 
-public:
   MenuItem() : MenuItem("", NULL, NULL) {}
   MenuItem(const String& title, const std::vector<MenuItem*> &sub) : MenuItem(title, NULL, sub) {}
   MenuItem(const String& title, std::function<void(MenuItem*)> cb) : MenuItem(title, NULL, cb) {}

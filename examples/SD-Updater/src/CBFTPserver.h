@@ -12,8 +12,9 @@ public:
   bool setup(){
     ftpSrv.begin("esp32","esp32");    //username, password for ftp.  set ports in ESP32FtpServer.h  (default 21, 50009 for PASV)
     M5.Lcd.fillScreen(0);
+    M5.Lcd.setTextColor(0xFFFF, 0);
     M5.Lcd.println("FTP server started...");
-    M5.Lcd.println("IP address : " + WiFi.localIP().toString());
+    M5.Lcd.println("host : " + WiFi.localIP().toString());
     M5.Lcd.println("user : esp32");
     M5.Lcd.println("pass : esp32");
     M5.Lcd.println();
@@ -23,10 +24,9 @@ public:
 
   bool loop()
   {
-    M5.update();
     ftpSrv.handleFTP();        //make sure in loop you call handleFTP()!!   
 
-    return !M5.BtnA.wasReleased();
+    return true;
   }
 
 private:

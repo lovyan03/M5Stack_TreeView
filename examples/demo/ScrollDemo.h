@@ -46,7 +46,6 @@ public:
   }
   bool loop()
   {
-    M5.update();
 delay(7);
     M5.Lcd.setTextColor(0xFFFF, 0);
     uint16_t xWay = way[((int)y + hArea - hHeader) % hArea];
@@ -89,7 +88,7 @@ delay(7);
       tx = (millis() % (TFT_HEIGHT - ww -20)) + 10;
     }
     wx += (tx < wx ? -1 : 1);
-    return !M5.BtnA.wasReleased();
+    return true;
   }
   void drawWay(int hy)
   {

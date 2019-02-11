@@ -11,8 +11,7 @@ public:
   void begin();
   MenuItem* update(bool force = false);
   bool isRedraw() const { return _redraw; }
-protected:
-  virtual int16_t updateDestRect(MenuItem* mi, int16_t x = 0, int16_t y = 0);
+
   enum eCmd
   { NONE
   , BACK
@@ -21,9 +20,10 @@ protected:
   , HOLD
   , ENTER
   };
-
-  eCmd checkKB(char key);
   eCmd checkInput();
+protected:
+  eCmd checkKB(char key);
+  virtual int16_t updateDestRect(MenuItem* mi, int16_t x = 0, int16_t y = 0);
 private:
   Rect16 _cursorRect;
   uint32_t _repeat;
