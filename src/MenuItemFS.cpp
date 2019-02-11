@@ -1,5 +1,7 @@
 #include <MenuItemFS.h>
 #include <Rect16.h>
+#undef min
+#include <algorithm>
 
 void MenuItemFS::onEnter() {
   deleteItems();

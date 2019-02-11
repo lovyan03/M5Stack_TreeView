@@ -2,6 +2,8 @@
 
 #include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater/
 #include <SD.h>
+#undef min
+#include <algorithm>
 
 static SDUpdater sdUpdater;
 
