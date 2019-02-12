@@ -27,6 +27,7 @@ public:
   static bool useCardKB;
   static bool useJoyStick;
   static bool usePLUSEncoder;
+  static bool swapBtnBC;
 
   MenuItem* const parentItem() const { return _parentItem; }
   MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }

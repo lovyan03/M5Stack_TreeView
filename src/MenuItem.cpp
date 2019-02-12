@@ -18,6 +18,7 @@ bool MenuItem::useFACES = false;
 bool MenuItem::useCardKB = false;
 bool MenuItem::useJoyStick = false;
 bool MenuItem::usePLUSEncoder = false;
+bool MenuItem::swapBtnBC = false;
 
 int16_t MenuItem::titleOffset = 14;
 int16_t MenuItem::font = 1;
@@ -428,6 +429,6 @@ void MenuItem::updateButtons() {
   } else {
     _btnDrawer.setText(0, "Back/Prev");
   }
-  _btnDrawer.setText(1, "Next");
-  _btnDrawer.setText(2, "Ok");
+  _btnDrawer.setText(swapBtnBC ? 1 : 2, "Next");
+  _btnDrawer.setText(swapBtnBC ? 2 : 1, "Ok");
 }

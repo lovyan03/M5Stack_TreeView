@@ -19,8 +19,12 @@ void MenuItemNumeric::onEnter() {
   while (M5.BtnC.isPressed()) M5.update();
   draw();
   M5ButtonDrawer btnDrawer;
-  btnDrawer.setText("Back","-","+");
+  btnDrawer.setText(0, "-");
+  btnDrawer.setText(swapBtnBC ? 1 : 2, "+");
+  btnDrawer.setText(swapBtnBC ? 2 : 1, "Ok");
   btnDrawer.draw(true);
+  Button& btn1(swapBtnBC ? M5.BtnB : M5.BtnC);
+  Button& btn2(swapBtnBC ? M5.BtnC : M5.BtnB);
   drawNum(value, 1);
   int pv = value;
   int repeat = 0;
@@ -52,10 +56,9 @@ void MenuItemNumeric::onEnter() {
         if ((0 == (facesPrev & 0x04)) && (0 != (facesKey & 0x04))) break;
       }
     }
-
     M5.update();
-    if (M5.BtnC.wasPressed() || M5.BtnC.pressedFor(msecHold)) { ++repeat; setValue(value + 1); }
-    if (M5.BtnB.wasPressed() || M5.BtnB.pressedFor(msecHold)) { ++repeat; setValue(value - 1); }
+    if (M5.BtnA.wasPressed() || M5.BtnA.pressedFor(msecHold)) { ++repeat; setValue(value - 1); }
+    if (   btn1.wasPressed() ||    btn1.pressedFor(msecHold)) { ++repeat; setValue(value + 1); }
     btnDrawer.draw();
     if (pv != value) {
       drawNum(value, 1);
@@ -65,7 +68,7 @@ void MenuItemNumeric::onEnter() {
       repeat = 0;
       delay(10);
     }
-  } while (!M5.BtnA.wasReleased());
+  } while (!btn2.wasReleased());
 }
 
 void MenuItemNumeric::drawNum(int value, int flg)

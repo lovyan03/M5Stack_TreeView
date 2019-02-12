@@ -9,9 +9,10 @@ M5Stack用 ツリービュー形式のメニューUIライブラリ
 
 カスタマイズして独自のメニュー項目を作成できます。  
 
-Support FACES GameBoy unit.  
+Support FACES Keyboard and GameBoy unit.  
 Support PLUS Encoder unit.  
 Support JoyStick unit.  
+Support CardKB unit.  
 
 M5Stackの各種ユニットでの操作にも対応。  
 
@@ -19,8 +20,8 @@ M5Stackの各種ユニットでの操作にも対応。
 
  `BtnA click` : フォーカスを親へ移動  Move focus to parent item.  
  `BtnA hold`  : フォーカスを前へ移動  Move focus to the previous item.  
- `BtnB click/hold` : フォーカスを次へ移動  Move focus to the next item.  
- `BtnC click` : 選択  Select focus item.  
+ `BtnB click` : 選択  Select focus item.  
+ `BtnC click/hold` : フォーカスを次へ移動  Move focus to the next item.  
   
 ## Requirement
 動作には M5OnScreenKeyboard が必要です。  

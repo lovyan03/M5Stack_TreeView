@@ -76,6 +76,7 @@ void setup() {
                    , new MenuItem("WiFi mode AP STA", 2004)
                  } )
                } )
+               , new MenuItemSD("Btn B/C swap", CallBackBtnSwap)
                , new MenuItemSD("SD card", CallBackFS)
                , new MenuItemSPIFFS("SPIFFS", CallBackFS)
                , new MenuItem("Tree sample", vmi
@@ -128,7 +129,7 @@ void loop() {
   if (treeView.isRedraw()) {
     drawFrame();
   }
-  
+
   if (!(loopcounter % 10))  header.draw();
 
   if (mi != NULL) {
@@ -268,7 +269,7 @@ void CallBackWiFiClient(MenuItem* sender)
   while (M5.BtnA.isPressed()) M5.update();
 }
 
-void CallBackBrightness(MenuItem* sender) 
+void CallBackBrightness(MenuItem* sender)
 {
   MenuItemNumeric* mi = static_cast<MenuItemNumeric*>(sender);
   if (!mi) return;
@@ -276,7 +277,7 @@ void CallBackBrightness(MenuItem* sender)
 }
 
 
-void CallBackDACtest(MenuItem* sender) 
+void CallBackDACtest(MenuItem* sender)
 {
   MenuItemNumeric* mi = static_cast<MenuItemNumeric*>(sender);
   if (!mi) return;
@@ -285,7 +286,12 @@ void CallBackDACtest(MenuItem* sender)
   dacWrite(mi->tag, mi->value);
 }
 
-void CallBackFS(MenuItem* sender) 
+void CallBackBtnSwap(MenuItem* sender)
+{
+  treeView.swapBtnBC = !treeView.swapBtnBC;
+}
+
+void CallBackFS(MenuItem* sender)
 {
   MenuItemFS* mi = static_cast<MenuItemFS*>(sender);
   if (!mi) return;
