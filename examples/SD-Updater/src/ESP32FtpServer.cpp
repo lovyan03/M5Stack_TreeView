@@ -668,19 +668,13 @@ boolean FtpServer::processCommand()
       client.println( "501 No file name");
     else if( makePath( path ))
     {
-      if( fs().exists( path ))
-        client.println( "553 " +String(parameters)+ " already exists");
+        #ifdef FTP_DEBUG
+      Serial.println("Renaming " + String(buf) + " to " + String(path));
+        #endif
+      if( fs().rename( buf, path ))
+        client.println( "250 File successfully renamed or moved");
       else
-      {          
-            #ifdef FTP_DEBUG
-		  Serial.println("Renaming " + String(buf) + " to " + String(path));
-            #endif
-            if( fs().rename( buf, path ))
-              client.println( "250 File successfully renamed or moved");
-            else
-				client.println( "451 Rename/move failure");
-                                 
-      }
+        client.println( "451 Rename/move failure");
     }
     rnfrCmd = false;
   }
