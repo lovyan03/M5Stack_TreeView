@@ -52,15 +52,15 @@ M5TreeView::eCmd M5TreeView::checkInput() {
   M5.update();
   eCmd res = eCmd::NONE;
   bool btnA = M5.BtnA.isPressed();
-  Button& btn1(swapBtnBC ? M5.BtnB : M5.BtnC);
-  Button& btn2(swapBtnBC ? M5.BtnC : M5.BtnB);
-  bool press = btnA || btn1.isPressed() || btn2.isPressed();
+  Button& btnB(swapBtnBC ? M5.BtnC : M5.BtnB);
+  Button& btnC(swapBtnBC ? M5.BtnB : M5.BtnC);
+  bool press = btnA || btnC.isPressed() || btnB.isPressed();
   bool canRepeat = _repeat == 0 || (_msec - _msecLast) >= (1 < _repeat ? msecRepeat : msecHold);
   if (canRepeat) {
-    if (btn2.isPressed())   { res = eCmd::HOLD;  }
+    if (btnB.isPressed())   { res = eCmd::HOLD;  }
     else if (M5.BtnA.wasReleased() && !btnALong) { res = eCmd::BACK; }
-    else if (btn1.isPressed() )  { ++_repeat; res = eCmd::NEXT;  }
-    else if (btn2.wasReleased()) { res = eCmd::ENTER; }
+    else if (btnC.isPressed() )  { ++_repeat; res = eCmd::NEXT;  }
+    else if (btnB.wasReleased()) { res = eCmd::ENTER; }
     else if (btnALong) { ++_repeat; res = eCmd::PREV; }
   }
   btnALong = M5.BtnA.pressedFor(msecHold);

@@ -76,9 +76,9 @@ void setup() {
                    , new MenuItem("WiFi mode AP STA", 2004)
                  } )
                } )
-               , new MenuItemSD("Btn B/C swap", CallBackBtnSwap)
                , new MenuItemSD("SD card", CallBackFS)
                , new MenuItemSPIFFS("SPIFFS", CallBackFS)
+               , new MenuItem("Btn B/C swap", CallBackBtnSwap)
                , new MenuItem("Tree sample", vmi
                  { new MenuItem("sub 1", vmi
                    { new MenuItem("sub 1-1", vmi
@@ -129,7 +129,7 @@ void loop() {
   if (treeView.isRedraw()) {
     drawFrame();
   }
-
+  
   if (!(loopcounter % 10))  header.draw();
 
   if (mi != NULL) {
@@ -253,6 +253,7 @@ void CallBackWiFiClient(MenuItem* sender)
   String wifi_passwd = preferences.getString("WIFI_PASSWD");
 
   if (mi->auth != WIFI_AUTH_OPEN) {
+    osk.swapBtnBC = treeView.swapBtnBC;
     osk.setup(wifi_passwd);
     while (osk.loop()) { delay(1); }
     wifi_passwd = osk.getString();
@@ -269,7 +270,7 @@ void CallBackWiFiClient(MenuItem* sender)
   while (M5.BtnA.isPressed()) M5.update();
 }
 
-void CallBackBrightness(MenuItem* sender)
+void CallBackBrightness(MenuItem* sender) 
 {
   MenuItemNumeric* mi = static_cast<MenuItemNumeric*>(sender);
   if (!mi) return;
@@ -277,7 +278,7 @@ void CallBackBrightness(MenuItem* sender)
 }
 
 
-void CallBackDACtest(MenuItem* sender)
+void CallBackDACtest(MenuItem* sender) 
 {
   MenuItemNumeric* mi = static_cast<MenuItemNumeric*>(sender);
   if (!mi) return;
