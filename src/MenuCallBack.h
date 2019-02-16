@@ -10,15 +10,18 @@ class MenuItem;
 // メニュー選択時のコールバック
 struct MenuCallBack {
   M5ButtonDrawer btnDrawer;
+  M5TreeView* treeView;
+  M5TreeView::eCmd cmd;
+  MenuItem* menuItem;
   virtual void operator()(MenuItem* mi) {
-    M5TreeView* tv((M5TreeView*)(mi->topItem()));
-    M5TreeView::eCmd cmd;
+    menuItem = mi;
+    treeView = ((M5TreeView*)(mi->topItem()));
     M5.Lcd.fillScreen(0);
     btnDrawer.setText("Back","","");
     if (setup()) {
       byte i = -1;
       do {
-        cmd = tv->checkInput();
+        cmd = treeView->checkInput();
         btnDrawer.draw(0 == (++i & 0x0F));
       } while (cmd != M5TreeView::eCmd::BACK && loop());
       close();

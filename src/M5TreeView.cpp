@@ -49,13 +49,14 @@ M5TreeView::eCmd M5TreeView::checkKB(char key) {
 }
 
 M5TreeView::eCmd M5TreeView::checkInput() {
+  _msec = millis();
   M5.update();
   eCmd res = eCmd::NONE;
   bool btnA = M5.BtnA.isPressed();
   Button& btnB(swapBtnBC ? M5.BtnC : M5.BtnB);
   Button& btnC(swapBtnBC ? M5.BtnB : M5.BtnC);
   bool press = btnA || btnC.isPressed() || btnB.isPressed();
-  bool canRepeat = _repeat == 0 || (_msec - _msecLast) >= (1 < _repeat ? msecRepeat : msecHold);
+  bool canRepeat = _repeat == 0 || (_msec - _msecLast + _repeat) >= (1 < _repeat ? msecRepeat : msecHold);
   if (canRepeat) {
     if (btnB.isPressed())   { res = eCmd::HOLD;  }
     else if (M5.BtnA.wasReleased() && !btnALong) { res = eCmd::BACK; }
@@ -64,9 +65,8 @@ M5TreeView::eCmd M5TreeView::checkInput() {
     else if (btnALong) { ++_repeat; res = eCmd::PREV; }
   }
   btnALong = M5.BtnA.pressedFor(msecHold);
-  if (res != eCmd::NONE) return res;
-
-  if (useFACES && Wire.requestFrom(0x08, 1)) {
+  if (res == eCmd::NONE
+   && useFACES && Wire.requestFrom(0x08, 1)) {
     while (Wire.available()){
       facesPrev = facesKey;
       facesKey = Wire.read();
@@ -88,58 +88,57 @@ M5TreeView::eCmd M5TreeView::checkInput() {
         else if ((0 != (facesKey & 0x10))&&(0 == (facesPrev & 0x10))) { res = eCmd::ENTER; }
       }
     }
-    if (res != eCmd::NONE) return res;
   }
-  if (useCardKB && Wire.requestFrom(0x5F, 1)) {
+  if (res == eCmd::NONE
+   && useCardKB && Wire.requestFrom(0x5F, 1)) {
     while (Wire.available()){
       char key = Wire.read();
       if (key == 0)  { continue; }
       press = true;
       res = checkKB(key);
     }
-    if (res != eCmd::NONE) return res;
   }
-  if (usePLUSEncoder && PLUSEncoder.update()) {
-    if (PLUSEncoder.wasUp())       { return eCmd::PREV;  }
-    if (PLUSEncoder.wasDown())     { return eCmd::NEXT;  }
-    if (PLUSEncoder.wasHold())     { return eCmd::BACK;  }
-    if (PLUSEncoder.wasClicked())  { return eCmd::ENTER; }
+  if (res == eCmd::NONE
+   && usePLUSEncoder && PLUSEncoder.update()) {
+    if (     PLUSEncoder.wasUp())       { res = eCmd::PREV;  }
+    else if (PLUSEncoder.wasDown())     { res = eCmd::NEXT;  }
+    else if (PLUSEncoder.wasHold())     { res = eCmd::BACK;  }
+    else if (PLUSEncoder.wasClicked())  { res = eCmd::ENTER; }
   }
-
-  if (useJoyStick && JoyStick.update()) {
+  if (res == eCmd::NONE
+   && useJoyStick && JoyStick.update()) {
     if (!JoyStick.isNeutral()) {
       press = true;
       if (canRepeat) {
         ++_repeat;
         //if (bool repeat = !active && JoyStick.directionChangedFor(msecHold);
-        if (JoyStick.isUp()    ) { return eCmd::PREV;  }
-        if (JoyStick.isDown()  ) { return eCmd::NEXT;  }
-        if (JoyStick.wasLeft() ) { return eCmd::BACK;  }
-        if (JoyStick.wasRight()) { return eCmd::ENTER; }
+        if (JoyStick.isUp()    ) { res = eCmd::PREV;  }
+        if (JoyStick.isDown()  ) { res = eCmd::NEXT;  }
+        if (JoyStick.wasLeft() ) { res = eCmd::BACK;  }
+        if (JoyStick.wasRight()) { res = eCmd::ENTER; }
       }
     }
-    if (JoyStick.wasClicked()) { return eCmd::ENTER; }
-    if (JoyStick.wasHold()) { return eCmd::BACK; }
+    if (JoyStick.wasClicked()) { res = eCmd::ENTER; }
+    if (JoyStick.wasHold())    { res = eCmd::BACK; }
   }
 
   if (!press) {
     _repeat = 0;
+  }
+  if (res != eCmd::NONE) {
+    _msecLast = millis();
   }
   return res;
 }
 
 MenuItem* M5TreeView::update(bool redraw) {
   while (millis() - _msec < 16) delay(1);
-  _msec = millis();
 
   redraw |= _redraw;
   _redraw = false;
   eCmd cmd = checkInput();
 
-  if (cmd != eCmd::NONE) {
-    _msecLast = _msec;
-    active = true;
-  }
+  active |= (cmd != eCmd::NONE);
   bool moveFocus = (!_cursorRect.equal(focusItem->destRect));
   active = move(cmd != eCmd::NONE) || moveFocus;
   if (active || redraw) {
