@@ -26,7 +26,7 @@ M5Stackの各種ユニットでの操作にも対応。
 ## Requirement
 動作には M5OnScreenKeyboard が必要です。  
 M5OnScreenKeyboard is required for operation.  
-(https://github.com/lovyan03/M5OnScreenKeyboard)
+(https://github.com/lovyan03/M5Stack_OnScreenKeyboard)
 
 
 ## Usage
@@ -72,7 +72,7 @@ void func(MenuItem* mi) {
 
 ## Licence
 
-[LGPL v2.1](https://github.com/lovyan03/M5TreeView/blob/master/LICENSE)  
+[LGPL v2.1](https://github.com/lovyan03/M5Stack_TreeView/blob/master/LICENSE)  
 
 ## Author
 
