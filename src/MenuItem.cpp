@@ -129,7 +129,7 @@ void MenuItem::drawTitle(bool selected, const String& text)
 void MenuItem::drawText(String text, int16_t x, int16_t y)
 {
   while (text != "") {
-    int w = M5.Lcd.textWidth(text);
+    int w = M5.Lcd.textWidth(text, font);
     int over = (x + w) - rect.right();
     if (0 < over) {
       text = text.substring(0, text.length() - 1 - over / 6);
