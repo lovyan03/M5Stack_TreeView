@@ -32,10 +32,10 @@ public:
   MenuItem* const parentItem() const { return _parentItem; }
   MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }
 
-  MenuItem() : MenuItem("", NULL, NULL) {}
-  MenuItem(const String& title, const std::vector<MenuItem*> &sub) : MenuItem(title, NULL, sub) {}
-  MenuItem(const String& title, std::function<void(MenuItem*)> cb) : MenuItem(title, NULL, cb) {}
-  MenuItem(const String& title, std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub) : MenuItem(title, NULL, cb, sub) {}
+  MenuItem() : MenuItem("", 0, NULL) {}
+  MenuItem(const String& title, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, sub) {}
+  MenuItem(const String& title, std::function<void(MenuItem*)> cb) : MenuItem(title, 0, cb) {}
+  MenuItem(const String& title, std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, cb, sub) {}
   MenuItem(const String& title, int tg    , const std::vector<MenuItem*> &sub) : MenuItem(title, tg, NULL, sub ) {}
   MenuItem(const String& title, int tg = 0, std::function<void(MenuItem*)> cb = NULL);
   MenuItem(const String& title, int tg    , std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub);
