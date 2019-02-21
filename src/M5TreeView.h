@@ -23,7 +23,6 @@ public:
   eCmd checkInput();
 protected:
   eCmd checkKB(char key);
-  virtual int16_t updateDestRect(MenuItem* mi, int16_t x = 0, int16_t y = 0);
 private:
   Rect16 _cursorRect;
   uint32_t _repeat;

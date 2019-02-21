@@ -73,16 +73,19 @@ void MenuItemNumeric::onEnter() {
 
 void MenuItemNumeric::drawNum(int value, int flg)
 {
-  Rect16 r ( rect.right() - 40
-           , rect.y + rect.h / 6
-           , 32
-           , rect.h -(rect.h / 6)*2);
+  applyFont();
+  String str(value);
+  int w = std::max(M5.Lcd.textWidth(str)+4, 32);
+  Rect16 r ( rect.right() - (w + 8)
+           , rect.y + 2
+           , w
+           , rect.h - 4);
   M5.Lcd.drawRect(r.x+1, r.y, r.w-2, r.h, frameColor[flg]);
   M5.Lcd.drawRect(r.x, r.y+1, r.w, r.h-2, frameColor[flg]);
   r.inflate(-2);
 
   M5.Lcd.setTextColor(fontColor[flg]);
   M5.Lcd.fillRect(r.x, r.y, r.w, r.h, backColor[flg]);
-  M5.Lcd.drawRightString(String(value),r.right(), rect.y + (rect.h - M5.Lcd.fontHeight(font)) / 2, font);
+  M5.Lcd.drawRightString(str,r.right(), rect.y + (rect.h - fontHeight()) / 2, font);
 }
 

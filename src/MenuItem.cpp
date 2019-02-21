@@ -22,6 +22,7 @@ bool MenuItem::swapBtnBC = false;
 
 int16_t MenuItem::titleOffset = 14;
 int16_t MenuItem::font = 1;
+const GFXfont* MenuItem::gfxFont = NULL;
 
 MenuItem* MenuItem::focusItem = NULL;
 M5ButtonDrawer MenuItem::_btnDrawer;
@@ -77,11 +78,20 @@ void MenuItem::deleteItems() {
 
 int16_t MenuItem::updateDest()
 {
-  return updateDestRect(this, destRect.x + treeOffset, destRect.bottom());
+  return updateDestRect(destRect.x + treeOffset, destRect.bottom());
 }
 
-int16_t MenuItem::updateDestRect(MenuItem* mi, int16_t x, int16_t y) {
-  return _parentItem->updateDestRect(mi, x, y);
+int16_t MenuItem::updateDestRect(int16_t x, int16_t y) {
+  for (uint16_t i = 0; i != Items.size(); ++i) {
+    if (!Items[i]->visible || Items[i]->_hiding) continue;
+    Items[i]->destRect.x = x;
+    Items[i]->destRect.y = y;
+    Items[i]->destRect.h = itemHeight;
+    Items[i]->destRect.w = std::min((int)itemWidth, (int)clientRect.right() - x);
+    y += Items[i]->destRect.h;
+    y = Items[i]->updateDestRect(x + treeOffset, y);
+  }
+  return y;
 }
 
 bool MenuItem::move(bool force)
@@ -110,9 +120,26 @@ void MenuItem::drawTitle(bool selected)
   drawTitle(selected, title);
 }
 
-void MenuItem::drawTitle(bool selected, const String& text)
+int16_t MenuItem::fontHeight()
 {
   int16_t fh = M5.Lcd.fontHeight(font);
+  if (gfxFont && 12 < fh) fh = fh * 9 / 10;
+  return fh;
+}
+
+void MenuItem::applyFont()
+{
+  if (gfxFont) {
+    M5.Lcd.setFreeFont(gfxFont);
+  } else {
+    M5.Lcd.setTextFont(0);
+    M5.Lcd.setTextFont(font);
+  }
+}
+
+void MenuItem::drawTitle(bool selected, const String& text)
+{
+  int16_t fh = fontHeight();
   M5.Lcd.setTextColor(fontColor[selected ? 1 : 0]);
 
   int lf = text.indexOf('\n');
@@ -129,13 +156,13 @@ void MenuItem::drawTitle(bool selected, const String& text)
 void MenuItem::drawText(String text, int16_t x, int16_t y)
 {
   while (text != "") {
-    int w = M5.Lcd.textWidth(text, font);
+    int w = M5.Lcd.textWidth(text);
     int over = (x + w) - rect.right();
     if (0 < over) {
-      text = text.substring(0, text.length() - 1 - over / 6);
+      text = text.substring(0, text.length() - 1 - over / 12);
     } else break;
   }
-  M5.Lcd.drawString(text, rect.x + titleOffset, y, font);
+  M5.Lcd.drawString(text, rect.x + titleOffset, y);
 }
 
 void MenuItem::focusBack() {
@@ -273,6 +300,7 @@ MenuItem* MenuItem::draw(bool force, const Rect16* cursorRect, const Rect16* old
           M5.Lcd.fillRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, backColor[0]);
         }
         if (!_hiding && rect.y >= clientRect.y && rect.bottom() <= clientRect.bottom()) {
+          applyFont();
           drawTitle(cursor);
           onAfterDraw();
         }
@@ -301,17 +329,18 @@ MenuItem* MenuItem::erase(bool force, MenuItem* nextmi)
   }
 
   if (force) {
-      trimFillRect( clientRect.x
-                  , rect.y
-                  , rect.x - clientRect.x
-                  , rect.h
-                  , backgroundColor);
-      trimFillRect( rect.right()
-                  , rect.y
-                  , clientRect.right() - rect.right()
-                  , rect.h
-                  , backgroundColor);
-  } else if (nextmi != NULL) {
+    trimFillRect( clientRect.x
+                , rect.y
+                , rect.x - clientRect.x
+                , rect.h
+                , backgroundColor);
+    trimFillRect( rect.right()
+                , rect.y
+                , clientRect.right() - rect.right()
+                , rect.h
+                , backgroundColor);
+  } else
+  if (nextmi != NULL) {
     // left top erase
     if (nextmi->rect.x < rect.x && nextmi->_oldRect.y < nextmi->rect.y) {
       trimFillRect( nextmi->rect.x
@@ -329,7 +358,7 @@ MenuItem* MenuItem::erase(bool force, MenuItem* nextmi)
                   , backgroundColor);
     }
     // right bottom erase
-    if (nextmi->rect.right() < rect.right() && rect.y < _oldRect.y) {
+    if (nextmi->rect.right() < rect.right() && rect.bottom() < _oldRect.bottom()) {
       trimFillRect( nextmi->rect.right()
                   , rect.bottom()
                   , rect.right() - nextmi->rect.right()
@@ -358,7 +387,7 @@ MenuItem* MenuItem::erase(bool force, MenuItem* nextmi)
         trimFillRect( _oldRect.x
                     , rect.bottom()
                     , nextmi->rect.x - _oldRect.x
-                    , _oldRect.y - rect.y
+                    , _oldRect.bottom() - rect.bottom()
                     , backgroundColor);
       }
     }

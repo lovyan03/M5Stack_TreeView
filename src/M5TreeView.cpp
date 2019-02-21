@@ -4,21 +4,7 @@
 #undef min
 #include <algorithm>
 
-static bool active = false;
 static bool btnALong = false;
-
-int16_t M5TreeView::updateDestRect(MenuItem* mi, int16_t x, int16_t y) {
-  for (uint16_t i = 0; i != mi->Items.size(); ++i) {
-    if (!mi->Items[i]->visible || mi->Items[i]->_hiding) continue;
-    mi->Items[i]->destRect.x = x;
-    mi->Items[i]->destRect.y = y;
-    mi->Items[i]->destRect.h = itemHeight;
-    mi->Items[i]->destRect.w = std::min((int)itemWidth, (int)clientRect.right() - x);
-    y += itemHeight;
-    y = mi->Items[i]->updateDestRect(mi->Items[i], x + treeOffset, y);
-  }
-  return y;
-}
 
 void M5TreeView::begin() {
   focusItem = Items[0];
@@ -111,7 +97,6 @@ M5TreeView::eCmd M5TreeView::checkInput() {
       press = true;
       if (canRepeat) {
         ++_repeat;
-        //if (bool repeat = !active && JoyStick.directionChangedFor(msecHold);
         if (JoyStick.isUp()    ) { res = eCmd::PREV;  }
         if (JoyStick.isDown()  ) { res = eCmd::NEXT;  }
         if (JoyStick.wasLeft() ) { res = eCmd::BACK;  }
@@ -136,28 +121,26 @@ MenuItem* M5TreeView::update(bool redraw) {
 
   redraw |= _redraw;
   _redraw = false;
-  eCmd cmd = checkInput();
 
-  active |= (cmd != eCmd::NONE);
+  eCmd cmd = checkInput();
+  if (cmd != eCmd::NONE || M5.BtnA.wasPressed() || M5.BtnA.wasReleased() || redraw) {
+    updateButtons();
+  }
+  _btnDrawer.draw(redraw);
+
   bool moveFocus = (!_cursorRect.equal(focusItem->destRect));
-  active = move(cmd != eCmd::NONE) || moveFocus;
-  if (active || redraw) {
-    erase(redraw);
+  if (move(cmd != eCmd::NONE) || moveFocus || redraw) {
+    erase(false);
     if (moveFocus) {
       const Rect16& c = _cursorRect;
       Rect16 r = cmd != eCmd::NONE ? focusItem->destRect : c.mixRect(focusItem->destRect);
       draw(redraw, &r, &_cursorRect);
       _cursorRect = r;
-      active = true;
     } else {
       draw(redraw, &_cursorRect);
     }
   }
 
-  if (cmd != eCmd::NONE || M5.BtnA.wasPressed() || M5.BtnA.wasReleased()) {
-    updateButtons();
-  }
-  _btnDrawer.draw(redraw);
   MenuItem* oldFocus = focusItem;
   MenuItem* res = NULL;
   switch (cmd) {
@@ -173,10 +156,16 @@ MenuItem* M5TreeView::update(bool redraw) {
     if (cmd == eCmd::ENTER) {
       res = focusItem;
       _redraw = focusEnter();
+      if (_redraw) {
+        updateDest();
+        erase(true);
+      }
     }
     break;
   }
-  if (oldFocus != focusItem) scrollTarget(focusItem);
+  if (oldFocus != focusItem) {
+    scrollTarget(focusItem);
+  }
   return res;
 }
 

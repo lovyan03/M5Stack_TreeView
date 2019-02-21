@@ -22,12 +22,14 @@ public:
   static uint32_t msecHold;
   static uint32_t msecRepeat;
   static int16_t titleOffset;
-  static int16_t font;
   static bool useFACES;
   static bool useCardKB;
   static bool useJoyStick;
   static bool usePLUSEncoder;
   static bool swapBtnBC;
+
+  static void setTextFont(int f) { gfxFont = NULL; font = f; }
+  static void setFreeFont(const GFXfont* f) { gfxFont = f; font = 1; }
 
   MenuItem* const parentItem() const { return _parentItem; }
   MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }
@@ -64,7 +66,7 @@ public:
   virtual void onAfterDraw();
 
   int16_t updateDest();
-  virtual int16_t updateDestRect(MenuItem* mi, int16_t x = 0, int16_t y = 0);
+  int16_t updateDestRect(int16_t x = 0, int16_t y = 0);
 
   std::vector<MenuItem*> Items;
   String title;
@@ -75,8 +77,12 @@ public:
   bool visible;
   bool _hiding = false;
 protected:
+  static int16_t font;
+  static const GFXfont* gfxFont;
   static MenuItem* focusItem;
   static M5ButtonDrawer _btnDrawer;
+  static int16_t fontHeight();
+  static void applyFont();
   static void trimFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
   static bool compareIgnoreCase(MenuItem* lhs, MenuItem* rhs);
 
