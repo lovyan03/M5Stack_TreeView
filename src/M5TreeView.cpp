@@ -20,9 +20,9 @@ void M5TreeView::begin() {
   update(true);
 }
 
-static char facesKey;
-static char facesPrev;
-static bool flgFACESKB;
+static char facesKey = 0xff;
+static char facesPrev = 0xff;
+static bool flgFACESKB = false;
 
 M5TreeView::eCmd M5TreeView::checkKB(char key) {
   switch ((uint8_t)key) {
@@ -56,22 +56,23 @@ M5TreeView::eCmd M5TreeView::checkInput() {
     while (Wire.available()){
       facesPrev = facesKey;
       facesKey = Wire.read();
-      if (facesKey == 0xff)   { flgFACESKB = false; }
-      else if (facesKey == 0) { flgFACESKB = true; }
-      else press = true;
-      if (flgFACESKB) {
-        res = checkKB(facesKey);
-      } else {
-        if (facesKey != 0xff && canRepeat) {
-          ++_repeat;
-          if (0 == (facesKey & 0x01) ) { res = eCmd::PREV; }
-          else if (0 == (facesKey & 0x02) ) { res = eCmd::NEXT; }
+      if (facesKey == 0) { flgFACESKB = true; }
+      else {
+        if (facesKey == 0xff)   { flgFACESKB = false; }
+        else press = true;
+        if (flgFACESKB) {
+          res = checkKB(facesKey);
+        } else {
+          if (facesKey != 0xff && canRepeat) {
+            if (     0 == (facesKey & 0x01) ) { res = eCmd::PREV; ++_repeat; }
+            else if (0 == (facesKey & 0x02) ) { res = eCmd::NEXT; ++_repeat; }
+          }
+          if (0 == (facesKey & 0x08) || 0 == (facesKey & 0x10)) { res = eCmd::HOLD; }
+          else if ((0 != (facesKey & 0x04))&&(0 == (facesPrev & 0x04))) { res = eCmd::BACK;  }
+          else if ((0 != (facesKey & 0x20))&&(0 == (facesPrev & 0x20))) { res = eCmd::BACK;  }
+          else if ((0 != (facesKey & 0x08))&&(0 == (facesPrev & 0x08))) { res = eCmd::ENTER; }
+          else if ((0 != (facesKey & 0x10))&&(0 == (facesPrev & 0x10))) { res = eCmd::ENTER; }
         }
-        if (0 == (facesKey & 0x08) ) { res = eCmd::HOLD; }
-        else if ((0 != (facesKey & 0x04))&&(0 == (facesPrev & 0x04))) { res = eCmd::BACK;  }
-        else if ((0 != (facesKey & 0x20))&&(0 == (facesPrev & 0x20))) { res = eCmd::BACK;  }
-        else if ((0 != (facesKey & 0x08))&&(0 == (facesPrev & 0x08))) { res = eCmd::ENTER; }
-        else if ((0 != (facesKey & 0x10))&&(0 == (facesPrev & 0x10))) { res = eCmd::ENTER; }
       }
     }
   }
