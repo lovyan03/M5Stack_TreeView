@@ -4,9 +4,10 @@
 #include <M5Stack.h>
 #include <M5TreeView.h>
 #include <M5OnScreenKeyboard.h> // https://github.com/lovyan03/M5OnScreenKeyboard/
-#include <MenuItemWiFiClient.h>
 #include <MenuItemSD.h>
 #include <MenuItemSPIFFS.h>
+#include <MenuItemToggle.h>
+#include <MenuItemWiFiClient.h>
 #include <M5ButtonDrawer.h>
 #include <Preferences.h>
 
@@ -186,13 +187,22 @@ void CallBackWiFiClient(MenuItem* sender)
   while (M5.BtnA.isPressed()) M5.update();
 }
 
+void CallBackToggletest(MenuItem* sender) 
+{
+  MenuItemToggle* mi = static_cast<MenuItemToggle*>(sender);
+  if (!mi) return;
+
+  pinMode(mi->tag, OUTPUT);
+  digitalWrite(mi->tag, mi->value);
+}
+
+
 void CallBackBrightness(MenuItem* sender) 
 {
   MenuItemNumeric* mi = static_cast<MenuItemNumeric*>(sender);
   if (!mi) return;
   M5.Lcd.setBrightness(mi->value);
 }
-
 
 void CallBackDACtest(MenuItem* sender) 
 {
@@ -262,6 +272,12 @@ void setup() {
                  , new MenuItem("Style 4", 1004)
                  , new MenuItem("Style 5", 1005)
                  , new MenuItem("Style 6", 1006)
+                 } )
+               , new MenuItem("Toggle Sample ", vmi
+                 { new MenuItemToggle("GPIO 3", false,  3, CallBackToggletest)
+                 , new MenuItemToggle("GPIO 1", false,  1, CallBackToggletest)
+                 , new MenuItemToggle("GPIO16", false, 16, CallBackToggletest)
+                 , new MenuItemToggle("GPIO17", false, 17, CallBackToggletest)
                  } )
                , new MenuItem("Numeric Sample ", vmi
                  { new MenuItemNumeric("Brightness", 0, 255, 80, CallBackBrightness)

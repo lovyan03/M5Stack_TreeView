@@ -14,7 +14,7 @@
   "dependencies": {
   	"name": "M5Stack"
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "framework": "arduino",
   "platforms": "espressif32",
   "build": {

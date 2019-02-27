@@ -16,7 +16,6 @@ void MenuItemNumeric::setValue(int value)
 }
 
 void MenuItemNumeric::onEnter() {
-  while (M5.BtnC.isPressed()) M5.update();
   draw();
   M5ButtonDrawer btnDrawer;
   btnDrawer.setText(0, "-");
