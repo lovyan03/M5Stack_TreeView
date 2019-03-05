@@ -9,7 +9,7 @@ public:
   String path;
   bool isDir;
 
-  MenuItemFS(const String& title, std::function<void(MenuItem*)>cb = NULL)
+  MenuItemFS(const String& title, TCallBackEnter cb = NULL)
   : MenuItem(title, cb), path(), isDir(true) {};
 
   MenuItemFS(const String& title, const std::vector<MenuItem*> &items)

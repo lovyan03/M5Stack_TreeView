@@ -7,7 +7,7 @@
 
 class MenuItemWiFiClient : public MenuItem {
 public:
-  MenuItemWiFiClient(const String& title, std::function<void(MenuItem*)>cb = 0)
+  MenuItemWiFiClient(const String& title, TCallBackEnter cb = 0)
   : MenuItem(title, cb) {};
 
   virtual void onEnter();

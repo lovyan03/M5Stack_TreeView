@@ -11,6 +11,8 @@
 class MenuItem {
 protected:
 public:
+  using TCallBackEnter = std::function<void(MenuItem*)>;
+
   static Rect16 clientRect;
   static uint16_t itemHeight;
   static uint16_t itemWidth;
@@ -36,11 +38,11 @@ public:
 
   MenuItem() : MenuItem("", 0, NULL) {}
   MenuItem(const String& title, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, sub) {}
-  MenuItem(const String& title, std::function<void(MenuItem*)> cb) : MenuItem(title, 0, cb) {}
-  MenuItem(const String& title, std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, cb, sub) {}
+  MenuItem(const String& title, TCallBackEnter cb) : MenuItem(title, 0, cb) {}
+  MenuItem(const String& title, TCallBackEnter cb, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, cb, sub) {}
   MenuItem(const String& title, int tg    , const std::vector<MenuItem*> &sub) : MenuItem(title, tg, NULL, sub ) {}
-  MenuItem(const String& title, int tg = 0, std::function<void(MenuItem*)> cb = NULL);
-  MenuItem(const String& title, int tg    , std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub);
+  MenuItem(const String& title, int tg = 0, TCallBackEnter cb = NULL);
+  MenuItem(const String& title, int tg    , TCallBackEnter cb, const std::vector<MenuItem*> &sub);
   virtual ~MenuItem() {};
 
   void addItem(MenuItem* item);
@@ -70,7 +72,7 @@ public:
 
   std::vector<MenuItem*> Items;
   String title;
-  std::function<void(MenuItem*)> callback = 0;
+  TCallBackEnter callback = 0;
   Rect16 destRect;    // destinationPoint
   Rect16 rect;        // displayPoint
   int tag = 0;

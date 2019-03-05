@@ -6,7 +6,7 @@
 class MenuItemSPIFFS : public MenuItemFS
 {
 public:
-  MenuItemSPIFFS(const String& title, std::function<void(MenuItem*)>cb = NULL)
+  MenuItemSPIFFS(const String& title, TCallBackEnter cb = NULL)
   : MenuItemFS(title, cb) {};
 
   MenuItemSPIFFS(const String& title, const std::vector<MenuItem*> &items)

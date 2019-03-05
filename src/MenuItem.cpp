@@ -27,7 +27,7 @@ const GFXfont* MenuItem::gfxFont = NULL;
 MenuItem* MenuItem::focusItem = NULL;
 M5ButtonDrawer MenuItem::_btnDrawer;
 
-MenuItem::MenuItem(const String& titleStr, int tg, std::function<void(MenuItem*)> cb)
+MenuItem::MenuItem(const String& titleStr, int tg, TCallBackEnter cb)
 : title(titleStr)
 , callback(cb)
 , tag(tg)
@@ -38,7 +38,7 @@ MenuItem::MenuItem(const String& titleStr, int tg, std::function<void(MenuItem*)
 , _parentItem(NULL)
 {}
 
-MenuItem::MenuItem(const String& titleStr, int tg, std::function<void(MenuItem*)> cb, const std::vector<MenuItem*> &sub) 
+MenuItem::MenuItem(const String& titleStr, int tg, TCallBackEnter cb, const std::vector<MenuItem*> &sub) 
 : MenuItem(titleStr, tg, cb)
 {
   setItems(sub);

@@ -6,7 +6,7 @@
 class MenuItemSD : public MenuItemFS
 {
 public:
-  MenuItemSD(const String& title, std::function<void(MenuItem*)>cb = NULL)
+  MenuItemSD(const String& title, TCallBackEnter cb = NULL)
   : MenuItemFS(title, cb) {};
 
   MenuItemSD(const String& title, const std::vector<MenuItem*> &items)
