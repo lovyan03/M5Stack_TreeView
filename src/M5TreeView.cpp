@@ -4,8 +4,6 @@
 #undef min
 #include <algorithm>
 
-static bool btnALong = false;
-
 void M5TreeView::begin() {
   focusItem = Items[0];
   for (uint16_t i = 0; i != Items.size(); ++i) {
@@ -35,13 +33,13 @@ M5TreeView::eCmd M5TreeView::checkKB(char key) {
 }
 
 M5TreeView::eCmd M5TreeView::checkInput() {
+  bool btnALong = M5.BtnA.pressedFor(msecHold);
   _msec = millis();
   M5.update();
   eCmd res = eCmd::NONE;
-  bool btnA = M5.BtnA.isPressed();
   Button& btnB(swapBtnBC ? M5.BtnC : M5.BtnB);
   Button& btnC(swapBtnBC ? M5.BtnB : M5.BtnC);
-  bool press = btnA || btnC.isPressed() || btnB.isPressed();
+  bool press = M5.BtnA.isPressed() || btnB.isPressed() || btnC.isPressed();
   bool canRepeat = _repeat == 0 || (_msec - _msecLast + _repeat) >= (1 < _repeat ? msecRepeat : msecHold);
   if (canRepeat) {
     if (btnB.isPressed())   { res = eCmd::HOLD;  }
@@ -50,7 +48,6 @@ M5TreeView::eCmd M5TreeView::checkInput() {
     else if (btnB.wasReleased()) { res = eCmd::ENTER; }
     else if (btnALong) { ++_repeat; res = eCmd::PREV; }
   }
-  btnALong = M5.BtnA.pressedFor(msecHold);
   if (res == eCmd::NONE
    && useFACES && Wire.requestFrom(0x08, 1)) {
     while (Wire.available()){
@@ -160,6 +157,7 @@ MenuItem* M5TreeView::update(bool redraw) {
       if (_redraw) {
         updateDest();
         erase(true);
+        focusItem->onEnter();
       }
     }
     break;
