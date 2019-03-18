@@ -157,7 +157,7 @@ MenuItem* M5TreeView::update(bool redraw) {
       if (_redraw) {
         updateDest();
         erase(true);
-        focusItem->onEnter();
+        focusItem->onFocus();
       }
     }
     break;

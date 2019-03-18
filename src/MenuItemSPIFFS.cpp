@@ -7,6 +7,8 @@ MenuItemFS* MenuItemSPIFFS::newMenuItemFS(const String& title, const String& pat
 }
 
 fs::FS& MenuItemSPIFFS::getFS() const {
-  if (0 == path.length()) SPIFFS.begin();
+  if (0 == path.length()) {
+    SPIFFS.begin();
+  }
   return SPIFFS;
 }

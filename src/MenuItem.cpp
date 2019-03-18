@@ -215,9 +215,8 @@ bool MenuItem::focusEnter() {
     if (mi->callback) {
       mi->callback(focusItem);
       _btnDrawer.draw(true);
-      focusItem->onFocus();
+      return true;
     }
-    return true;
   }
   return false;
 }

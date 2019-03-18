@@ -7,6 +7,9 @@ MenuItemFS* MenuItemSD::newMenuItemFS(const String& title, const String& path, b
 }
 
 fs::FS& MenuItemSD::getFS() const {
-  if (0 == path.length()) SD.begin();
+  if (0 == path.length()) {
+    SD.end();
+    SD.begin(TFCARD_CS_PIN);
+  }
   return SD;
 }
