@@ -155,9 +155,10 @@ void MenuItem::drawTitle(bool selected, const String& text)
 
 void MenuItem::drawText(String text, int16_t x, int16_t y)
 {
+  int rp = getRightPadding();
   while (text != "") {
     int w = M5.Lcd.textWidth(text);
-    int over = (x + w) - rect.right();
+    int over = (x + w + rp) - rect.right();
     if (0 < over) {
       text = text.substring(0, text.length() - 1 - over / 12);
     } else break;
@@ -199,21 +200,25 @@ void MenuItem::focusPrev() {
   scrollTarget(focusItem);
 }
 bool MenuItem::focusEnter() {
+  MenuItem* oldFI = focusItem;
   focusItem->onEnter();
-  if (!focusItem->Items.empty())
-  { // Itemsがある場合はツリー展開
-    MenuItem* mi = focusItem;
-    setFocusItem(focusItem->Items[0]);
+  if (!oldFI->Items.empty())
+  { // Expand the tree if the item has children.
+    if (oldFI == focusItem)
+    { // If focus item isn't changed by onEnter, change focus to the first child.
+      MenuItem* mi = oldFI->Items[0];
+      setFocusItem(mi);
+    }
     updateDest();
-    scrollSubitemArea(mi);
-    scrollTarget(mi);
+    scrollSubitemArea(oldFI);
+    scrollTarget(oldFI);
   } else 
-  { // Itemsを持たない場合はコールバック呼び出し
-    MenuItem* mi = focusItem;
-    // コールバックが設定されているアイテムを検索（ツリーを遡る）
+  { // Execute callback function if the item has no children.
+    MenuItem* mi = oldFI;
+    // Find the parent that holds the callback.
     while (mi != this && !mi->callback) { mi = mi->parentItem(); }
     if (mi->callback) {
-      mi->callback(focusItem);
+      mi->callback(oldFI);
       _btnDrawer.draw(true);
       return true;
     }
@@ -226,6 +231,10 @@ void MenuItem::setFocusItem(MenuItem* newmi)
   if (NULL != focusItem) focusItem->onDefocus();
   focusItem = newmi;
   focusItem->onFocus();
+}
+
+MenuItem* MenuItem::getFocusItem() {
+  return focusItem;
 }
 
 void MenuItem::onAfterDraw()

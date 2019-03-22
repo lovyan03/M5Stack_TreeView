@@ -14,6 +14,8 @@ public:
   virtual void onExit();
   virtual void onAfterDraw();
 
+  virtual int getRightPadding() const { return 18; }
+
   String ssid;
   int8_t rssi;
   wifi_auth_mode_t auth;

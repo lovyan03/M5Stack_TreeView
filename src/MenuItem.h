@@ -32,6 +32,8 @@ public:
 
   static void setTextFont(int f) { gfxFont = NULL; font = f; }
   static void setFreeFont(const GFXfont* f) { gfxFont = f; font = 1; }
+  static void setFocusItem(MenuItem* newmi);
+  static MenuItem* getFocusItem();
 
   MenuItem* const parentItem() const { return _parentItem; }
   MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }
@@ -57,7 +59,6 @@ public:
   void focusNext();
   void focusPrev();
   bool focusEnter();
-  void setFocusItem(MenuItem* newmi);
   MenuItem* draw(bool force = true, const Rect16* forceRect = 0, const Rect16* prevforceRect = 0, MenuItem* nextmi = NULL);
   MenuItem* erase(bool force = true, MenuItem* nextmi = NULL);
 
@@ -66,6 +67,9 @@ public:
   virtual void onFocus() { }
   virtual void onDefocus() { }
   virtual void onAfterDraw();
+
+  // title right padding
+  virtual int getRightPadding() const { return 0; }
 
   int16_t updateDest();
   int16_t updateDestRect(int16_t x = 0, int16_t y = 0);
