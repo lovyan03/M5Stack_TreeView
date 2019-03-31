@@ -115,7 +115,12 @@ M5TreeView::eCmd M5TreeView::checkInput() {
 }
 
 MenuItem* M5TreeView::update(bool redraw) {
-  while (millis() - _msec < 16) delay(1);
+  if (millis() - _msec < 16) {
+    uint32_t freq = getCpuFrequencyMhz();
+    setCpuFrequencyMhz(getXtalFrequencyMhz() / 4);
+    delay(16 - (millis() - _msec));
+    setCpuFrequencyMhz(freq);
+  }
 
   redraw |= _redraw;
   _redraw = false;
