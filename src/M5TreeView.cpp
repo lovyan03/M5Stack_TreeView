@@ -170,6 +170,8 @@ MenuItem* M5TreeView::update(bool redraw) {
   if (oldFocus != focusItem) {
     scrollTarget(focusItem);
   }
+  focusItem->onFocusLoop();
+
   return res;
 }
 

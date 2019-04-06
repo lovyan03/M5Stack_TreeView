@@ -65,6 +65,7 @@ public:
   virtual void onEnter();
   virtual void onExit() { }
   virtual void onFocus() { }
+  virtual void onFocusLoop() { }
   virtual void onDefocus() { }
   virtual void onAfterDraw();
 
