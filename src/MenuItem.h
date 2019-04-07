@@ -28,6 +28,7 @@ public:
   static bool useCardKB;
   static bool useJoyStick;
   static bool usePLUSEncoder;
+  static bool useLowClockDelay;
   static bool swapBtnBC;
 
   static void setTextFont(int f) { gfxFont = NULL; font = f; }

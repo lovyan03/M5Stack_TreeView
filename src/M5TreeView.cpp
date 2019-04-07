@@ -117,9 +117,9 @@ M5TreeView::eCmd M5TreeView::checkInput() {
 MenuItem* M5TreeView::update(bool redraw) {
   if (millis() - _msec < 16) {
     uint32_t freq = getCpuFrequencyMhz();
-    setCpuFrequencyMhz(getXtalFrequencyMhz() / 4);
+    if (useLowClockDelay) setCpuFrequencyMhz(getXtalFrequencyMhz() / 4);
     delay(16 - (millis() - _msec));
-    setCpuFrequencyMhz(freq);
+    if (useLowClockDelay) setCpuFrequencyMhz(freq);
   }
 
   redraw |= _redraw;
@@ -170,7 +170,7 @@ MenuItem* M5TreeView::update(bool redraw) {
   if (oldFocus != focusItem) {
     scrollTarget(focusItem);
   }
-  focusItem->onFocusLoop();
+  if (focusItem) focusItem->onFocusLoop();
 
   return res;
 }
