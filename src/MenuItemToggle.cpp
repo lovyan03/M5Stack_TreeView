@@ -28,12 +28,11 @@ void MenuItemToggle::drawParts(bool mode, int flg)
   r.inflate(-2);
 
   w = 16;
-  switch (mode){
-  case false:M5.Lcd.fillRect(r.x + w, r.y, r.w-w, r.h, backgroundColor);
-             break;
-  default:   M5.Lcd.drawRect(r.right()-w, r.y, w    , r.h, fontColor[flg]);
-             M5.Lcd.fillRect(r.x        , r.y, r.w-w, r.h, backgroundColor);
-             break;
+  if (mode) {
+    M5.Lcd.drawRect(r.right()-w, r.y, w    , r.h, fontColor[flg]);
+    M5.Lcd.fillRect(r.x        , r.y, r.w-w, r.h, backgroundColor);
+  } else {
+    M5.Lcd.fillRect(r.x + w, r.y, r.w-w, r.h, backgroundColor);
   }
 }
 

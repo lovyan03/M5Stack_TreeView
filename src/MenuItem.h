@@ -36,8 +36,8 @@ public:
   static void setFocusItem(MenuItem* newmi);
   static MenuItem* getFocusItem();
 
-  MenuItem* const parentItem() const { return _parentItem; }
-  MenuItem* const topItem() { return _parentItem ? _parentItem->topItem() : this; }
+  MenuItem* parentItem() const { return _parentItem; }
+  MenuItem* topItem() { return _parentItem ? _parentItem->topItem() : this; }
 
   MenuItem() : MenuItem("", 0, NULL) {}
   MenuItem(const String& title, const std::vector<MenuItem*> &sub) : MenuItem(title, 0, sub) {}
@@ -79,9 +79,9 @@ public:
   std::vector<MenuItem*> Items;
   String title;
   TCallBackEnter callback = 0;
+  int tag = 0;
   Rect16 destRect;    // destinationPoint
   Rect16 rect;        // displayPoint
-  int tag = 0;
   bool visible;
   bool _hiding = false;
 protected:

@@ -20,9 +20,9 @@ public:
 
   virtual void onEnter();
   virtual void onAfterDraw();
-  virtual fs::FS& getFS() const {}
+  virtual fs::FS& getFS() const = 0;
 protected:
-  virtual MenuItemFS* newMenuItemFS(const String& title, const String& path, bool isdir) const {}
+  virtual MenuItemFS* newMenuItemFS(const String& title, const String& path, bool isdir) const = 0;
 };
 
 #endif

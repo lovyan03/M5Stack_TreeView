@@ -147,22 +147,25 @@ MenuItem* M5TreeView::update(bool redraw) {
   MenuItem* oldFocus = focusItem;
   MenuItem* res = NULL;
   switch (cmd) {
+  case eCmd::NONE:  break;
   case eCmd::PREV:  focusPrev();   break;
   case eCmd::NEXT:  focusNext();   break;
   case eCmd::BACK:  focusBack();
     res = focusItem;
     break;
   case eCmd::ENTER: case eCmd::HOLD:
-    Rect16 rtmp = focusItem->rect;
-    rtmp = clientRect.intersect(rtmp);
-    M5.Lcd.drawRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, frameColor[1]);
-    if (cmd == eCmd::ENTER) {
-      res = focusItem;
-      _redraw = focusEnter();
-      if (_redraw) {
-        updateDest();
-        erase(true);
-        focusItem->onFocus();
+    {
+      Rect16 rtmp = focusItem->rect;
+      rtmp = clientRect.intersect(rtmp);
+      M5.Lcd.drawRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, frameColor[1]);
+      if (cmd == eCmd::ENTER) {
+        res = focusItem;
+        _redraw = focusEnter();
+        if (_redraw) {
+          updateDest();
+          erase(true);
+          focusItem->onFocus();
+        }
       }
     }
     break;

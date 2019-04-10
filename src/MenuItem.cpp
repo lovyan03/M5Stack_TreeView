@@ -261,7 +261,7 @@ MenuItem* MenuItem::draw(bool force, const Rect16* cursorRect, const Rect16* old
   if (!Items.empty()) {
     for (std::vector<MenuItem*>::reverse_iterator it = Items.rbegin(); it != Items.rend(); ++it) {
       if ((*it)->visible) {
-        nextmi = (*it)->draw(force || nextmi && nextmi->_moving, cursorRect, oldCursorRect, nextmi);
+        nextmi = (*it)->draw(force || (nextmi && nextmi->_moving), cursorRect, oldCursorRect, nextmi);
       }
     }
   }
