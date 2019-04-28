@@ -18,19 +18,40 @@ void MenuItemNumeric::setValue(int value)
 void MenuItemNumeric::onEnter() {
   draw();
   M5ButtonDrawer btnDrawer;
+#ifndef ARDUINO_ODROID_ESP32
   btnDrawer.setText(0, "-");
   btnDrawer.setText(swapBtnBC ? 1 : 2, "+");
   btnDrawer.setText(swapBtnBC ? 2 : 1, "Ok");
   btnDrawer.draw(true);
   Button& btn1(swapBtnBC ? M5.BtnB : M5.BtnC);
   Button& btn2(swapBtnBC ? M5.BtnC : M5.BtnB);
+#endif
   drawNum(value, 1);
   int pv = value;
   int repeat = 0;
   char facesPrev = 0xFF;
   char facesKey = 0xFF;
   bool flgFACESKB = false;
-  do {
+  for (;;) {
+    M5.update();
+#ifdef ARDUINO_ODROID_ESP32
+    if (M5.BtnB.wasReleased()) break;
+    if (M5.JOY_X.isAxisPressed() == DPAD_V_FULL) {
+      while (M5.JOY_X.isPressed()) { M5.update(); }
+      break;
+    }
+    if (M5.JOY_Y.isAxisPressed()) {
+      ++repeat;
+      if (M5.JOY_Y.isAxisPressed() == DPAD_V_FULL) {
+        setValue(value + 1);
+      } else {
+        setValue(value - 1);
+      }
+    }
+#else
+    if (btn2.wasReleased()) break;
+    if (M5.BtnA.wasPressed() || M5.BtnA.pressedFor(msecHold)) { ++repeat; setValue(value - 1); }
+    if (   btn1.wasPressed() ||    btn1.pressedFor(msecHold)) { ++repeat; setValue(value + 1); }
     if (usePLUSEncoder && PLUSEncoder.update()) {
       if (PLUSEncoder.wasClicked() || PLUSEncoder.wasHold()) break;
       if (PLUSEncoder.wasUp()  ) { setValue(value + 1); }
@@ -55,10 +76,8 @@ void MenuItemNumeric::onEnter() {
         if ((0 == (facesPrev & 0x04)) && (0 != (facesKey & 0x04))) break;
       }
     }
-    M5.update();
-    if (M5.BtnA.wasPressed() || M5.BtnA.pressedFor(msecHold)) { ++repeat; setValue(value - 1); }
-    if (   btn1.wasPressed() ||    btn1.pressedFor(msecHold)) { ++repeat; setValue(value + 1); }
     btnDrawer.draw();
+#endif
     if (pv != value) {
       drawNum(value, 1);
       pv = value;
@@ -67,7 +86,7 @@ void MenuItemNumeric::onEnter() {
       repeat = 0;
       delay(10);
     }
-  } while (!btn2.wasReleased());
+  }
 }
 
 void MenuItemNumeric::drawNum(int value, int flg)

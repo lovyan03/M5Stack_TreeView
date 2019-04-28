@@ -32,6 +32,33 @@ M5TreeView::eCmd M5TreeView::checkKB(char key) {
   return eCmd::NONE;
 }
 
+#ifdef ARDUINO_ODROID_ESP32
+M5TreeView::eCmd M5TreeView::checkInput() {
+  _msec = millis();
+  M5.update();
+  eCmd res = eCmd::NONE;
+  bool press = M5.BtnA.isPressed()
+            || M5.BtnB.isPressed()
+            || M5.JOY_X.isPressed()
+            || M5.JOY_Y.isPressed();
+  bool canRepeat = _repeat == 0 || (_msec - _msecLast + _repeat) >= (1 < _repeat ? msecRepeat : msecHold);
+  if (canRepeat) {
+    if (M5.BtnA.isPressed())  { res = eCmd::HOLD;  }
+    else if (M5.BtnA.wasReleased() || (M5.JOY_X.isAxisPressed() == DPAD_V_HALF))  { ++_repeat; res = eCmd::ENTER;  }
+    else if (M5.BtnB.wasReleased() || (M5.JOY_X.isAxisPressed() == DPAD_V_FULL))  { ++_repeat; res = eCmd::BACK; }
+    else if (M5.JOY_Y.isAxisPressed() == DPAD_V_HALF )  { ++_repeat; res = eCmd::NEXT;  }
+    else if (M5.JOY_Y.isAxisPressed() == DPAD_V_FULL )  { ++_repeat; res = eCmd::PREV; }
+  }
+
+  if (!press) {
+    _repeat = 0;
+  }
+  if (res != eCmd::NONE) {
+    _msecLast = millis();
+  }
+  return res;
+}
+#else
 M5TreeView::eCmd M5TreeView::checkInput() {
   bool btnALong = M5.BtnA.pressedFor(msecHold);
   _msec = millis();
@@ -113,6 +140,7 @@ M5TreeView::eCmd M5TreeView::checkInput() {
   }
   return res;
 }
+#endif
 
 MenuItem* M5TreeView::update(bool redraw) {
   if (millis() - _msec < 16) {
@@ -129,7 +157,9 @@ MenuItem* M5TreeView::update(bool redraw) {
   if (cmd != eCmd::NONE || M5.BtnA.wasPressed() || M5.BtnA.wasReleased() || redraw) {
     updateButtons();
   }
+#ifndef ARDUINO_ODROID_ESP32
   _btnDrawer.draw(redraw);
+#endif
 
   bool moveFocus = (!_cursorRect.equal(focusItem->destRect));
   if (move(cmd != eCmd::NONE) || moveFocus || redraw) {

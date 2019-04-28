@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <M5ButtonDrawer.h>
 
-Rect16 MenuItem::clientRect(0,0,TFT_HEIGHT,TFT_WIDTH - M5ButtonDrawer::height);
+Rect16 MenuItem::clientRect(0,0,M5.Lcd.width(), M5.Lcd.height() - M5ButtonDrawer::height);
 
 int8_t MenuItem::treeOffset = 10;
 uint16_t MenuItem::itemHeight = 20;
@@ -220,7 +220,9 @@ bool MenuItem::focusEnter() {
     while (mi != this && !mi->callback) { mi = mi->parentItem(); }
     if (mi->callback) {
       mi->callback(oldFI);
+#ifndef ARDUINO_ODROID_ESP32
       _btnDrawer.draw(true);
+#endif
       return true;
     }
   }

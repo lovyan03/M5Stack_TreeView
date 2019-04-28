@@ -40,7 +40,7 @@ public:
     M5.Lcd.setTextFont(font);
     M5.Lcd.setTextSize(1);
     M5.Lcd.setTextColor(colorFont, colorFill);
-    M5.Lcd.drawFastHLine(0, 8, TFT_HEIGHT, 0xC618);
+    M5.Lcd.drawFastHLine(0, 8, M5.Lcd.width(), 0xC618);
 
     int x = 0;
 
@@ -60,9 +60,9 @@ public:
         x = drawStr(" ", x);
       }
     }
-    M5.Lcd.setCursor(TFT_HEIGHT - 96, 0);
+    M5.Lcd.setCursor(M5.Lcd.width() - 96, 0);
     M5.Lcd.printf("Free%7d Byte", esp_get_free_heap_size());
-    M5.Lcd.fillRect(x, 0, TFT_HEIGHT - 96-x, 8, colorFill);
+    M5.Lcd.fillRect(x, 0, M5.Lcd.width() - 96-x, 8, colorFill);
   }
 };
 

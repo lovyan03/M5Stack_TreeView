@@ -22,7 +22,9 @@ struct MenuCallBack {
       byte i = -1;
       do {
         cmd = treeView->checkInput();
+#ifndef ARDUINO_ODROID_ESP32
         btnDrawer.draw(0 == (++i & 0x0F));
+#endif
       } while (cmd != M5TreeView::eCmd::BACK && loop());
       close();
       M5.Lcd.fillScreen(MenuItem::backgroundColor);
