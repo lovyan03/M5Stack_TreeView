@@ -14,7 +14,9 @@ void setup() {
   treeView.useCardKB      = true;
   treeView.useJoyStick    = true;
   treeView.usePLUSEncoder = true;
+  treeView.clientRect.x = 2;
   treeView.clientRect.y = 10;
+  treeView.clientRect.w = 316;
   treeView.clientRect.h = 216;
 
   treeView.setItems(vmi
