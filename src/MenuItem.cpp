@@ -168,9 +168,9 @@ void MenuItem::drawText(String text, int16_t x, int16_t y)
 }
 
 void MenuItem::focusBack() {
-  if (focusItem->parentItem() != this) {
-    focusItem->onExit();
-    setFocusItem(focusItem->parentItem());
+  focusItem->onExit();
+  setFocusItem(focusItem->parentItem());
+  if (focusItem->parentItem()) {
     for (uint16_t i = 0; i != focusItem->Items.size(); ++i) {
       focusItem->Items[i]->destRect = focusItem->destRect;
       focusItem->Items[i]->_hiding = true;

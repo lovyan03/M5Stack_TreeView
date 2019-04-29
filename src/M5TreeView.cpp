@@ -5,7 +5,6 @@
 #include <algorithm>
 
 void M5TreeView::begin() {
-  focusItem = Items[0];
   for (uint16_t i = 0; i != Items.size(); ++i) {
     Items[i]->visible = true;
   }
@@ -15,6 +14,7 @@ void M5TreeView::begin() {
   destRect.x = clientRect.x - treeOffset;
   updateDest();
   updateButtons();
+  setFocusItem(Items[0]);
   update(true);
 }
 
@@ -182,6 +182,7 @@ MenuItem* M5TreeView::update(bool redraw) {
   case eCmd::NEXT:  focusNext();   break;
   case eCmd::BACK:  focusBack();
     res = focusItem;
+    if (res == this) focusItem = oldFocus;
     break;
   case eCmd::ENTER: case eCmd::HOLD:
     {
