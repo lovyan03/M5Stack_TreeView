@@ -226,6 +226,7 @@ bool MenuItem::focusEnter() {
       return true;
     }
   }
+  _btnDrawer.draw(true);
   return false;
 }
 void MenuItem::setFocusItem(MenuItem* newmi)
