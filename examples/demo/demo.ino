@@ -256,11 +256,13 @@ void setup() {
   treeView.useFACES       = true;
   treeView.useJoyStick    = true;
   treeView.usePLUSEncoder = true;
+  treeView.useFACESEncoder= true;
   osk.useTextbox     = true;
   osk.useFACES       = true;
   osk.useCardKB      = true;
   osk.useJoyStick    = true;
   osk.usePLUSEncoder = true;
+  osk.useFACESEncoder= true;
   osk.msecHold   = treeView.msecHold;
   osk.msecRepeat = treeView.msecRepeat;
 

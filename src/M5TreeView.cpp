@@ -1,5 +1,6 @@
 #include <M5TreeView.h>
 #include <M5PLUSEncoder.h>
+#include <M5FACESEncoder.h>
 #include <M5JoyStick.h>
 #undef min
 #include <algorithm>
@@ -115,6 +116,13 @@ M5TreeView::eCmd M5TreeView::checkInput() {
     else if (PLUSEncoder.wasDown())     { res = eCmd::NEXT;  }
     else if (PLUSEncoder.wasHold())     { res = eCmd::BACK;  }
     else if (PLUSEncoder.wasClicked())  { res = eCmd::ENTER; }
+  }
+  if (res == eCmd::NONE
+   && useFACESEncoder && FACESEncoder.update()) {
+    if (     FACESEncoder.wasUp())       { res = eCmd::PREV;  }
+    else if (FACESEncoder.wasDown())     { res = eCmd::NEXT;  }
+    else if (FACESEncoder.wasHold())     { res = eCmd::BACK;  }
+    else if (FACESEncoder.wasClicked())  { res = eCmd::ENTER; }
   }
   if (res == eCmd::NONE
    && useJoyStick && JoyStick.update()) {

@@ -35,6 +35,7 @@ void setup() {
   treeView.useFACES       = true;
   treeView.useJoyStick    = true;
   treeView.usePLUSEncoder = true;
+  treeView.useFACESEncoder= true;
 
   treeView.setItems(vmi
                { new MenuItemSD("SD", CallBackFS)

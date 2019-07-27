@@ -1,5 +1,6 @@
 #include <MenuItemNumeric.h>
 #include <M5PLUSEncoder.h>
+#include <M5FACESEncoder.h>
 #include <M5JoyStick.h>
 #include <Rect16.h>
 
@@ -56,6 +57,11 @@ void MenuItemNumeric::onEnter() {
       if (PLUSEncoder.wasClicked() || PLUSEncoder.wasHold()) break;
       if (PLUSEncoder.wasUp()  ) { setValue(value + 1); }
       if (PLUSEncoder.wasDown()) { setValue(value - 1); }
+    }
+    if (useFACESEncoder && FACESEncoder.update()) {
+      if (FACESEncoder.wasClicked() || FACESEncoder.wasHold()) break;
+      if (FACESEncoder.wasUp()  ) { setValue(value + 1); }
+      if (FACESEncoder.wasDown()) { setValue(value - 1); }
     }
     if (useJoyStick && JoyStick.update()) {
       if (JoyStick.isUp()   ) { ++repeat; setValue(value + 1); }

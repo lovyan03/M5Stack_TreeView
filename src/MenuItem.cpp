@@ -18,6 +18,7 @@ bool MenuItem::useFACES = false;
 bool MenuItem::useCardKB = false;
 bool MenuItem::useJoyStick = false;
 bool MenuItem::usePLUSEncoder = false;
+bool MenuItem::useFACESEncoder = false;
 bool MenuItem::useLowClockDelay = false;
 bool MenuItem::swapBtnBC = false;
 

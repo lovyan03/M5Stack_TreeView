@@ -14,6 +14,7 @@ void setup() {
   treeView.useCardKB      = true;
   treeView.useJoyStick    = true;
   treeView.usePLUSEncoder = true;
+  treeView.useFACESEncoder= true;
   treeView.clientRect.x = 2;
   treeView.clientRect.y = 10;
   treeView.clientRect.w = 316;
