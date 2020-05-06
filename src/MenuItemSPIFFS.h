@@ -17,8 +17,8 @@ public:
 
 
 protected:
-  virtual MenuItemFS* newMenuItemFS(const String& title, const String& path, bool isdir) const;
-  virtual fs::FS& getFS() const;
+  MenuItemFS* newMenuItemFS(const String& title, const String& path, bool isdir) const override;
+  fs::FS& getFS() const override;
 };
 
 #endif

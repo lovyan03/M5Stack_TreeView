@@ -280,11 +280,12 @@ MenuItem* MenuItem::draw(bool force, const Rect16* cursorRect, const Rect16* old
     }
 
     if (_parentItem && _parentItem->rect.intersectsWith(rect)) {
-      if (_parentItem && _parentItem->rect.right() > rtmp.x) {
+      if (0 < rtmp.h && _parentItem && _parentItem->rect.right() > rtmp.x) {
         Rect16 r = rtmp;
         r.w -= _parentItem->rect.right() - r.x;
         r.x = _parentItem->rect.right();
-        M5.Lcd.fillRect(r.x, r.y, r.w, r.h, backColor[0]);
+        if (r.w > 0)
+          M5.Lcd.fillRect(r.x, r.y, r.w, r.h, backColor[0]);
       }
 
       if (_parentItem && _parentItem->rect.bottom() > rtmp.y) {
@@ -300,15 +301,16 @@ MenuItem* MenuItem::draw(bool force, const Rect16* cursorRect, const Rect16* old
       if (0 < rtmp.h && 0 < rtmp.w) {
         bool cursor = cursorRect && cursorRect->intersectsWith(rtmp);
         // fill item body
-        if (cursor) {
+       if (cursor) {
           Rect16 r = rtmp.intersect(*cursorRect);
-          if (0 < r.h) {   // fill cursor color
-            M5.Lcd.fillRect(rtmp.x, r.y, rtmp.w, r.h, backColor[1]);
-          }
-          if (cursorRect->y < rtmp.y) {
-            M5.Lcd.fillRect(rtmp.x, r.bottom(), rtmp.w, rtmp.bottom() - cursorRect->bottom(), backColor[0]);
-          } else if (cursorRect->y > rtmp.y) {
-            M5.Lcd.fillRect(rtmp.x, rtmp.y, rtmp.w, cursorRect->y - rtmp.y, backColor[0]);
+          if (0 < r.h) {
+            if (rtmp.y < r.y) {
+              M5.Lcd.fillRect(rtmp.x, rtmp.y, rtmp.w, r.y - rtmp.y , backColor[0]);
+            }
+            if (rtmp.bottom() > r.bottom()) {
+              M5.Lcd.fillRect(rtmp.x, r.bottom(), rtmp.w, rtmp.bottom() - r.bottom(), backColor[0]);
+            }
+            M5.Lcd.fillRect(rtmp.x, r.y, rtmp.w, r.h, backColor[1]); // fill cursor color
           }
         } else {
           M5.Lcd.fillRect(rtmp.x, rtmp.y, rtmp.w, rtmp.h, backColor[0]);

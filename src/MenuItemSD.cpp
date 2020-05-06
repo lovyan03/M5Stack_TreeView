@@ -9,7 +9,7 @@ MenuItemFS* MenuItemSD::newMenuItemFS(const String& title, const String& path, b
 fs::FS& MenuItemSD::getFS() const {
   if (0 == path.length()) {
     SD.end();
-    SD.begin( TFCARD_CS_PIN, SPI, 40000000);
+    SD.begin( TFCARD_CS_PIN, SPI, 20000000);
   }
   return SD;
 }
