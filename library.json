@@ -11,14 +11,14 @@
     "type": "git",
     "url": "https://github.com/lovyan03/M5Stack_TreeView"
   },
-  "dependencies": {
+  "dependencies": [
     {
       "name": "M5Stack"
     },
     {
       "name": "M5Stack_OnScreenKeyboard"
     }
-  },
+  ],
   "version": "0.2.13",
   "framework": "arduino",
   "platforms": "espressif32",

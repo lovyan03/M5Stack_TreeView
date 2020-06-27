@@ -1,5 +1,7 @@
 #include "MenuItem.h"
+#ifdef min
 #undef min
+#endif
 #include <algorithm>
 #include <M5ButtonDrawer.h>
 
