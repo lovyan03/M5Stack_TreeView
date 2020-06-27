@@ -19,7 +19,7 @@
       "name": "M5Stack_OnScreenKeyboard"
     }
   ],
-  "version": "0.2.13",
+  "version": "0.2.14",
   "framework": "arduino",
   "platforms": "espressif32",
   "build": {
